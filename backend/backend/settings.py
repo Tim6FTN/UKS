@@ -32,6 +32,15 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'label',
+    'commit',
+    'branch',
+    'milestone',
+    'project',
+    'task',
+    'repository',
+    'change',
+    'comment',
+    'wiki',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
