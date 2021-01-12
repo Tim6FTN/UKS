@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from label.models import Label
+from label.serializers import LabelSerializer
+
+
+class LabelViewSet(viewsets.ModelViewSet):
+    queryset = Label.objects.all()
+    serializer_class = LabelSerializer
+
