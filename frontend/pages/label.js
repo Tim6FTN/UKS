@@ -1,8 +1,7 @@
-
 import { useEffect, useState } from "react"
-import LabelService from "../../services/labelService"
-import LabelForm from './form'
-import LabelRow from './row'
+import LabelService from "../services/labelService"
+import LabelForm from '../components/label/form'
+import LabelRow from '../components/label/row'
 
 const Label = () => {
   const emptyLabel = {
