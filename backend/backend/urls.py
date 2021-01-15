@@ -17,9 +17,13 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from label import views as labelViews
+from project import views as projectViews
+from user.views import UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r'label', labelViews.LabelViewSet)
+router.register(r'project', projectViews.ProjectViewSet)
+router.register(r'user', UserViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

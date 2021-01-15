@@ -1,8 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from milestone.models import Milestone
 from project.models import Project
-
 
 class Task(models.Model):
     priorities = [
