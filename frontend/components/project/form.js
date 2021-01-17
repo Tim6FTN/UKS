@@ -55,33 +55,6 @@ const Form = ({ project, setProject, onSubmit }) => {
       </div>
 
       <div className="form-group">
-        <select
-          className="form-select"
-          multiple
-          onChange={handleSelect}
-          value={project.users.map((user) => user.id)}
-        >
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.username}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={project.isPublic}
-          onChange={(event) =>
-            setProject({ ...project, isPublic: event.target.checked })
-          }
-        />
-        <label className="form-check-label">Is public?</label>
-      </div>
-
-      <div className="form-group">
         <input type="submit" className="btn btn-success" value="Submit" />
       </div>
     </form>

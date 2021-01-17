@@ -1,12 +1,15 @@
 import axios from "axios";
 
-const getAll = () => axios.get("http://localhost:8000/project/");
+const url = `${process.env.API_URL}/project`
+
+
+const getAll = () => axios.get(`${url}/`);
 
 //change this
 const getById = async (projectId) => {
   try {
     const projectResponse = await axios.get(
-      `http://localhost:8000/project/${projectId}/`
+      `${url}/${projectId}/`
     );
     return projectResponse.data;
   } catch (error) {
@@ -17,14 +20,14 @@ const getById = async (projectId) => {
 
 const create = (project) =>
   axios
-    .post("http://localhost:8000/project/", project)
+    .post(`${url}/`, project)
     .catch((error) => alert(error));
 
 const remove = (projectId) =>
-  axios.delete(`http://localhost:8000/project/${projectId}/`);
+  axios.delete(`${url}/${projectId}/`);
 
 const update = (project) =>
-  axios.put(`http://localhost:8000/project/${project.id}/`, project);
+  axios.put(`${url}/${project.id}/`, project);
 
 const ProjectService = {
   getAll,

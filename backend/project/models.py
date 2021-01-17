@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from repository.models import Repository
+
 
 class Project(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    users = models.ManyToManyField(to=User, blank=True)
     description = models.TextField(null=True, blank=True)
-    isPublic = models.BooleanField(default=True)
+    repository = models.ForeignKey(to=Repository, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

@@ -1,14 +1,16 @@
 import axios from "axios";
 
-const getAll = () => axios.get("http://localhost:8000/label/");
+const url = `${process.env.API_URL}/label`
 
-const create = (label) => axios.post("http://localhost:8000/label/", label);
+const getAll = () => axios.get(`${url}/`);
+
+const create = (label) => axios.post(`${url}/`, label);
 
 const remove = (labelId) =>
-  axios.delete(`http://localhost:8000/label/${labelId}/`);
+  axios.delete(`${url}/${labelId}/`);
 
 const update = (label) =>
-  axios.put(`http://localhost:8000/label/${label.id}/`, label);
+  axios.put(`${url}/${label.id}/`, label);
 
 const LabelService = {
   getAll,

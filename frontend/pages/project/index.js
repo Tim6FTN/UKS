@@ -7,7 +7,6 @@ const Project = () => {
 
   useEffect(async () => {
     const responseProjects = await ProjectService.getAll();
-    console.log(responseProjects.data);
     setProjects(responseProjects.data);
   }, []);
 
@@ -57,6 +56,7 @@ const Project = () => {
             <th scope="col">Name</th>
             <th scope="col">Description</th>
             <th scope="col"></th>
+            <th scope="col">Users</th>
             <th scope="col"></th>
           </tr>
         </thead>
