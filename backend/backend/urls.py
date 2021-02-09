@@ -16,10 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from label import views as labelViews
+from label.views import LabelViewSet
+from project.views import ProjectViewSet
+from user.views import UserViewSet
+from repository.views import RepositoryViewSet
 
 router = routers.DefaultRouter()
-router.register(r'label', labelViews.LabelViewSet)
+router.register(r'label', LabelViewSet)
+router.register(r'project', ProjectViewSet)
+router.register(r'user', UserViewSet)
+router.register(r'repository', RepositoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
