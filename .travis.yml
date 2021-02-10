@@ -29,5 +29,3 @@ after_script:
 branches:
     only:
     - ci-test
-
-
