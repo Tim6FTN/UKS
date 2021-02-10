@@ -1,0 +1,7 @@
+branches:
+    only:
+    - ci-test
+
+language: python
+
+before_script: cd backend
