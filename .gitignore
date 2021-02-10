@@ -154,3 +154,6 @@ dmypy.json
 
 .idea
 backend/db.sqlite3
+
+backend/influxdb
+backend/esdata
