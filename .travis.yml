@@ -4,4 +4,6 @@ branches:
 
 language: python
 
-before_script: cd backend
+before_install: cd backend
+
+script: ./manage.py test
