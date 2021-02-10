@@ -10,19 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username']
 
 
-class OwnerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username']
-        extra_kwargs = {
-            'username': {
-                'validators': [],
-            }
-        }
-
-
 class RepositorySerializer(serializers.ModelSerializer):
-    owner = OwnerSerializer()
+    owner = UserSerializer(read_only=True)
     stars = UserSerializer(many=True, read_only=True)
     users = UserSerializer(many=True, read_only=True)
 
@@ -30,11 +19,14 @@ class RepositorySerializer(serializers.ModelSerializer):
         model = Repository
         fields = ['id', 'owner', 'name', 'description', 'stars', 'users', 'isPublic', 'project']
 
-    def create(self, validated_data):
-        print("asdasdasdasda")
-        print(self.context['owner'])
-        print(validated_data)
-        owner = self.context['owner']
-        return Repository.objects.create(
-            owner=owner, **validated_data
-        )
+
+class InviteRepositorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Repository
+        fields = ['id', 'name']
+
+
+class InviteSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    repository = InviteRepositorySerializer(read_only=True)
+

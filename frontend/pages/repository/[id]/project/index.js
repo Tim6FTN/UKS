@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import ProjectService from "../../services/projectService";
+import ProjectService from "../../../../services/projectService";
 import Link from "next/link";
-import Navbar from '../../components/util/navbar'
+import Navbar from '../../../../components/util/navbar'
+import Container from "../../../../components/util/container";
 
 
 const Project = () => {
@@ -14,7 +15,7 @@ const Project = () => {
 
   const tryDelete = (projectId) => {
     console.log(projectId);
-    if (window.confirm("Are you sure you want to delete this Label?"))
+    if (window.confirm("Are you sure you want to delete this project?"))
       ProjectService.remove(projectId).then((response) =>
         setProjects(projects.filter((project) => project.id != projectId))
       );
@@ -44,26 +45,28 @@ const Project = () => {
   return (
     <>
       <Navbar />
-      <h1>PROJECT</h1>
+      <Container>
+        <h1>PROJECT</h1>
 
-      <div>
-        <Link href="/project/new">
-          <a className="btn btn-success">New project</a>
-        </Link>
-      </div>
+        <div>
+          <Link href="/project/new">
+            <a className="btn btn-success">New project</a>
+          </Link>
+        </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Description</th>
-            <th scope="col"></th>
-            <th scope="col">Users</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>{projectRows()}</tbody>
-      </table>
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Description</th>
+              <th scope="col"></th>
+              <th scope="col">Users</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>{projectRows()}</tbody>
+        </table>
+      </Container>
     </>
   );
 };

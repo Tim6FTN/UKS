@@ -1,15 +1,10 @@
-<<<<<<< Updated upstream
-import { useEffect, useState } from "react"
-import LabelService from "../services/labelService"
-import LabelForm from '../components/label/form'
-import LabelRow from '../components/label/row'
-=======
 import { useEffect, useState } from "react";
 import LabelService from "../services/labelService";
 import LabelForm from "../components/label/form";
 import LabelRow from "../components/label/row";
 import Navbar from "../components/util/navbar"
->>>>>>> Stashed changes
+import Container from "../components/util/container";
+
 
 const Label = () => {
   const emptyLabel = {
@@ -51,28 +46,30 @@ const Label = () => {
   return (
     <>
       <Navbar />
-      <div>
-        <h1>LABEL</h1>
-
+      <Container>
         <div>
-          <button className="btn btn-success" onClick={() => newLabel()}>
-            New label
+          <h1>LABEL</h1>
+
+          <div>
+            <button className="btn btn-success" onClick={() => newLabel()}>
+              New label
         </button>
+          </div>
+
+          {!labelFormHidden && <LabelForm onCreate={onCreate} label={label} />}
+
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <tbody>{labelRows()}</tbody>
+          </table>
         </div>
-
-        {!labelFormHidden && <LabelForm onCreate={onCreate} label={label} />}
-
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Edit</th>
-              <th scope="col">Delete</th>
-            </tr>
-          </thead>
-          <tbody>{labelRows()}</tbody>
-        </table>
-      </div>
+      </Container>
     </>
   );
 };
