@@ -7,12 +7,35 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+      - ./static:/code/app/static
+    logging:
+      driver: "json-file"
     image: tim6uks_backend
     ports:
       - "8000:8000"
     depends_on:
-        - es
-        - kibana
+      - es
+      - kibana
+    links:
+      - redis
+  ## redis
+  redis:
+    image: redis
+    container_name: tim6uks_redis
+    expose:
+      - 6379
+  ## nginx
+  nginx:
+    image: nginx
+    container_name: tim6uks_nginx
+    ports:
+      - 8000:8000
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./static:/code/app/static
+    depends_on:
+      - web
+  ## ELK stack for logging
   es:
     image: elasticsearch:5.4
     container_name: uks_es
@@ -46,6 +69,7 @@ services:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     ports:
       - "5959:5959"
+  ## TICK STACK
   influxdb:
     container_name: myapp_influxdb
     image: influxdb:1.0.2
