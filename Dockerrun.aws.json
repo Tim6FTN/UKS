@@ -43,13 +43,13 @@
     "volumes": [
         {
             "host": {
-                "sourcePath": "./static"
+                "sourcePath": "/static"
             },
             "name": "_Static"
         },
         {
             "host": {
-                "sourcePath": "./config/nginx"
+                "sourcePath": "/config/nginx"
             },
             "name": "_ConfigNginx"
         }
