@@ -1,17 +1,58 @@
 {
     "AWSEBDockerrunVersion": 2,
-    "containerDefintions": [
+    "containerDefinitions": [
         {
-            "name": "tim6uks_web",
-            "image": "mmilovanovic/tim6uks_backend"
+            "memory":500,
+            "essential": true,
+            "image": "nginx",
+            "mountPoints": [
+                {
+                    "containerPath": "/etc/nginx/conf.d",
+                    "sourceVolume": "_ConfigNginx"
+                },
+                {
+                    "containerPath": "/code/static",
+                    "sourceVolume": "_Static"
+                }
+            ],
+            "name": "nginx",
+            "portMappings": [
+                {
+                    "containerPort": 8000,
+                    "hostPort": 8000
+                }
+            ]
+        },
+        {
+            "memory":500,
+            "command": [
+                "./start.sh"
+            ],
+            "essential": true,
+            "image": "tim6uks_backend",
+            "mountPoints": [
+                {
+                    "containerPath": "/code/static",
+                    "sourceVolume": "_Static"
+                }
+            ],
+            "name": "web"
         }
     ],
-    "portMappings":[
+    "family": "",
+    "volumes": [
         {
-            "containerPort":8000,
-            "hostPort": 80
+            "host": {
+                "sourcePath": "./static"
+            },
+            "name": "_Static"
+        },
+        {
+            "host": {
+                "sourcePath": "./config/nginx"
+            },
+            "name": "_ConfigNginx"
         }
-    ],
-    "memory": 500,
-    "essential": true
+    ]
+
 }
