@@ -4,7 +4,7 @@
         {
             "memory":128,
             "essential": true,
-            "image": "nginx:latest",
+            "image": "mmilovanovic/tim6uks_nginx:latest",
             "mountPoints": [
                 {
                     "containerPath": "/etc/nginx/conf.d",
@@ -18,7 +18,7 @@
             "name": "nginx",
             "portMappings": [
                 {
-                    "containerPort": 80,
+                    "containerPort": 8000,
                     "hostPort": 80
                 }
             ],
