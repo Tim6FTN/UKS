@@ -29,3 +29,14 @@ after_script:
 branches:
     only:
     - ci-test
+deploy:
+    provider: elasticbeanstalk
+    region: eu-central-1
+    app: tim6uks
+    env: Tim6uks-env
+    bucket_name: elasticbeanstalk-eu-central-1-661535873995
+    bucket_path: tim6uks
+    on: 
+        branch: ci-test
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY

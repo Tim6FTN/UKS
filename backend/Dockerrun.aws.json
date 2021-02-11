@@ -1,0 +1,17 @@
+{
+    "AWSEBDockerrunVersion": 2,
+    "containerDefintions": [
+        {
+            "name": "tim6uks_web",
+            "image": "mmilovanovic/tim6uks_backend"
+        }
+    ],
+    "portMappings":[
+        {
+            "containerPort":8000,
+            "hostPort": 80
+        }
+    ],
+    "memory": 500,
+    "essential": true
+}
