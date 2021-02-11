@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from repository.models import Repository
+from repository.models import Repository, Invite
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -30,3 +30,6 @@ class InviteSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     repository = InviteRepositorySerializer(read_only=True)
 
+    class Meta:
+        model = Invite
+        fields = ['id', 'user', 'repository']

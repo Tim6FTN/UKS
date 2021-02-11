@@ -5,7 +5,10 @@ import UserService from '../../services/userService'
 import { useRouter } from "next/router";
 import Container from '../../components/util/container'
 
+
+
 const NewRepository = () => {
+
   const emptyRepository = {
     name: "",
     owner: {
@@ -24,6 +27,7 @@ const NewRepository = () => {
     const usersReponse = await UserService.getAll();
     setUsers(usersReponse.data)
   }, [])
+
 
   const handleSelect = (event) => {
     const selectedUser = users.find(user => user.id == event.target.value)
@@ -64,7 +68,7 @@ const NewRepository = () => {
           </div>
           <div className="form-group">
             <label>Description</label>
-            <input type="text" className="form-control" value={repository.description} onChange={(event) => setRepository({ ...repository, description: event.target.value })} />
+            <textarea className="form-control" rows={10} value={repository.description} onChange={(event) => setRepository({ ...repository, description: event.target.value })} > </textarea>
           </div>
 
           <div className="form-check">

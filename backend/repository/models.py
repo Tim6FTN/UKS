@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 class Repository(models.Model):
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='owner')
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
     stars = models.ManyToManyField(to=User, blank=True, related_name='stars')
     users = models.ManyToManyField(to=User, blank=True, related_name='users')
