@@ -19,7 +19,7 @@
             "portMappings": [
                 {
                     "containerPort": 8000,
-                    "hostPort": 8080
+                    "hostPort": 8000
                 }
             ],
             "links": [
@@ -35,7 +35,7 @@
             "image": "mmilovanovic/tim6uks_backend:latest",
             "mountPoints": [
                 {
-                    "containerPath": "/code/static",
+                    "containerPath": "/var/app/current/static",
                     "sourceVolume": "_Static"
                 }
             ],
@@ -52,7 +52,7 @@
         },
         {
             "host": {
-                "sourcePath": "/config/nginx"
+                "sourcePath": "/var/app/current/config/nginx"
             },
             "name": "_ConfigNginx"
         }
