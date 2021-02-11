@@ -32,7 +32,7 @@
                 "./start.sh"
             ],
             "essential": true,
-            "image": "tim6uks_backend",
+            "image": "tim6uks_backend:latest",
             "mountPoints": [
                 {
                     "containerPath": "/code/static",

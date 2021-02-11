@@ -3,7 +3,7 @@ version: '3.2'
 services:
   web:
     container_name: tim6uks_web
-    image: tim6uks_backend
+    image: tim6uks_backend:latest
     build: .
     command: ["./start.sh"]
     expose:
@@ -22,7 +22,7 @@ services:
 #      - redis
 
   nginx:
-    image: nginx
+    image: nginx:latest
     container_name: uks_nginx
     ports:
       - 8000:8000
