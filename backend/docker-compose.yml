@@ -22,10 +22,13 @@ services:
 #      - redis
 
   nginx:
-    image: nginx:latest
+    build:
+        dockerfile: Dockerfile
+        context: ./nginx
+    image: tim6uks_nginx:latest
     container_name: uks_nginx
     ports:
-      - 80:80
+      - 80:8000
     volumes:
       - ./config/nginx:/etc/nginx/conf.d
       - ./static:/code/static
