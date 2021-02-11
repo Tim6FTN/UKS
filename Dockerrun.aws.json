@@ -4,7 +4,7 @@
         {
             "memory":128,
             "essential": true,
-            "image": "nginx",
+            "image": "nginx:latest",
             "mountPoints": [
                 {
                     "containerPath": "/etc/nginx/conf.d",
@@ -21,6 +21,9 @@
                     "containerPort": 8000,
                     "hostPort": 8000
                 }
+            ],
+            "links": [
+            	"web"
             ]
         },
         {
