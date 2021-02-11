@@ -2,7 +2,7 @@
     "AWSEBDockerrunVersion": 2,
     "containerDefinitions": [
         {
-            "memory":128,
+            "memory":256,
             "essential": true,
             "image": "mmilovanovic/tim6uks_nginx:latest",
             "mountPoints": [
@@ -28,7 +28,7 @@
             ]
         },
         {
-            "memory":256,
+            "memory":512,
             "command": [
                 "./start.sh"
             ],
