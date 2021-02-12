@@ -1,7 +1,11 @@
 from django.contrib import admin
-from repository.models import Repository
+from repository.models import Repository, Invite
 
 
 @admin.register(Repository)
-class Repository(admin.ModelAdmin):
+class RepositoryAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Invite)
+class InviteAdmin(admin.ModelAdmin):
     pass

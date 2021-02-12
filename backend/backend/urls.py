@@ -14,16 +14,32 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.urls import path, include
-from rest_framework import routers
-from label import views as labelViews
+from rest_framework import routers, viewsets
+
+from label.views import LabelViewSet
+from project.views import ProjectViewSet
+from repository.serializers import UserSerializer
+from repository.views import RepositoryViewSet
+from repository.views import InviteViewSet
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 
 router = routers.DefaultRouter()
-router.register(r'label', labelViews.LabelViewSet)
+router.register(r'label', LabelViewSet)
+router.register(r'project', ProjectViewSet)
+router.register(r'repository', RepositoryViewSet)
+router.register(r'user', UserViewSet)
+router.register(r'invite', InviteViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('api-auth', include('rest_framework.urls'))
-
+    path('api-auth', include('rest_framework.urls')),
 ]
