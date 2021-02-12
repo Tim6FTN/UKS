@@ -23,7 +23,8 @@ from project.views import ProjectViewSet
 from repository.serializers import UserSerializer
 from repository.views import RepositoryViewSet
 from repository.views import InviteViewSet
-
+from branch.views import BranchViewSet
+from commit.views import CommitViewSet
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -36,7 +37,8 @@ router.register(r'project', ProjectViewSet)
 router.register(r'repository', RepositoryViewSet)
 router.register(r'user', UserViewSet)
 router.register(r'invite', InviteViewSet)
-
+router.register(r'branch', BranchViewSet)
+router.register(r'commit', CommitViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

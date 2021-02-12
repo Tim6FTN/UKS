@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
-import Invite from "../../../components/repository/invite"
 import Container from "../../../components/util/container"
 import Navbar from "../../../components/util/navbar"
 import RepositoryService from '../../../services/repositoryService'
@@ -66,7 +65,6 @@ const Repository = () => {
   return (<>
     <Navbar />
     <Container>
-
       <div className="d-flex justify-content-center align-items-center">
         <FontAwesomeIcon onClick={() => router.push(`/repository/${router.query.id}/edit`)} icon={faEdit} className="mr-2" style={{ cursor: "pointer" }} />
         <h3 className="text-center">{`${repository.owner.username} / ${repository.name}`}</h3>
@@ -79,7 +77,9 @@ const Repository = () => {
 
       <div className="row bg-light">
         <div className="col text-center">
-          <button className="btn btn-secondary" > Code </button>
+          <Link href={`/repository/${router.query.id}/code`}>
+            <a className="btn btn-secondary" > Code </a>
+          </Link>
         </div>
         <div className="col text-center">
           <button className="btn btn-secondary" > Tasks </button>
@@ -90,7 +90,11 @@ const Repository = () => {
         <div className="col text-center">
           <button className="btn btn-secondary" > Wiki </button>
         </div>
-
+        <div className="col text-center">
+          <Link href={`/repository/${router.query.id}/invite`}>
+            <a className="btn btn-secondary" > Invite users </a>
+          </Link>
+        </div>
         <div className="col text-center">
           <button className="btn btn-danger" onClick={tryDelete}>Delete</button>
         </div>
@@ -99,12 +103,6 @@ const Repository = () => {
       <ReactMarkdown>
         {repository.description}
       </ReactMarkdown>
-
-      <div className="row bg-light">
-        <div className="col">
-          <Invite />
-        </div>
-      </div>
     </Container>
   </>
   )
