@@ -22,6 +22,8 @@ script:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD 
   - docker tag tim6uks_backend:latest mmilovanovic/tim6uks_backend
   - docker push mmilovanovic/tim6uks_backend
+  - docker tag tim6uks_frontend:latest mmilovanovic/tim6uks_frontend
+  - docker push mmilovanovic/tim6uks_frontend
   - docker logout 
 
 after_script:
