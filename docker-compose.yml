@@ -3,7 +3,7 @@ version: '3.2'
 services:
   web:
     container_name: tim6uks_web
-    image: mmilovanovic/tim6uks_backend:latest
+    image: tim6uks_backend:latest
     build:
         context: ./backend
         dockerfile: Dockerfile
@@ -41,7 +41,7 @@ services:
       - web
 
   nextjs:
-    image: mmilovanovic/tim6uks_frontend:latest
+    image: tim6uks_frontend:latest
     container_name: tim6uks_frontend
     build:
         context: ./frontend
