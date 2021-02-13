@@ -1,0 +1,36 @@
+version: '3.2'
+
+services:
+  web:
+    container_name: tim6uks_web
+    image: tim6uks_backend:latest
+    build:
+        context: ./backend
+        dockerfile: Dockerfile
+    command: ["./start.sh"]
+    expose:
+      - 8000
+#    ports:
+#      - 8000:8000
+    volumes:
+      - ./backend/static:/code/static
+#    logging:
+#      driver: "json-file"
+#    depends_on:
+#      - db
+#      - es
+#      - kibana
+#    links:
+#      - redis
+
+  nginx:
+    image: nginx:latest
+    container_name: uks_nginx
+    ports:
+      - 80:8000
+    volumes:
+      - ./backend/config/nginx:/etc/nginx/conf.d
+      - ./backend/static:/code/static
+      - ./backend/logs:/var/log/nginx
+    depends_on:
+      - web
