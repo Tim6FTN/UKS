@@ -45,3 +45,4 @@ deploy:
     secret_access_key: $AWS_SECRET_KEY
     on:
         branch: dev
+	branch: dockerize-frontend
