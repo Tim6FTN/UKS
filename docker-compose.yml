@@ -32,7 +32,7 @@ services:
     image: nginx:latest
     container_name: uks_nginx
     ports:
-      - 1234:8000
+      - 80:8000
     volumes:
       - ./backend/config/nginx:/etc/nginx/conf.d
       - ./backend/static:/code/static
