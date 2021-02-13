@@ -32,3 +32,14 @@ branches:
     - dev
     - main
  
+deploy:
+    provider: elasticbeanstalk
+    region: eu-central-1
+    app: uks-app
+    env:  Uksapp-env
+    bucket_name: elasticbeanstalk-eu-central-1-661535873995
+    bucket_path: uks-app
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    on:
+        branch: dev
