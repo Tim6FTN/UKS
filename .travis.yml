@@ -33,6 +33,7 @@ branches:
     only:
     - dev
     - main
+    - dockerize-frontend
  
 deploy:
     provider: elasticbeanstalk
