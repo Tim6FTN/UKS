@@ -68,7 +68,7 @@ const NewRepository = () => {
           </div>
           <div className="form-group">
             <label>Description</label>
-            <textarea className="form-control" rows={10} value={repository.description} onChange={(event) => setRepository({ ...repository, description: event.target.value })} > </textarea>
+            <textarea className="form-control" rows={10} value={repository.description} onChange={(event) => setRepository({ ...repository, description: event.target.value })} ></textarea>
           </div>
 
           <div className="form-check">
