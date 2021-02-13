@@ -33,7 +33,6 @@ branches:
     only:
     - dev
     - main
-    - dockerize-frontend
  
 deploy:
     provider: elasticbeanstalk
@@ -46,4 +45,3 @@ deploy:
     secret_access_key: $AWS_SECRET_KEY
     on:
         branch: dev
-        branch: dockerize-frontend
