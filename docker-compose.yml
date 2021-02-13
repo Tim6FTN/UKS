@@ -7,30 +7,44 @@ services:
     build:
         context: ./backend
         dockerfile: Dockerfile
-    command: ["./start.sh"]
-    expose:
-      - 8000
-#    ports:
-#      - 8000:8000
+    command: ["./wait_for_postgres.sh"]
+    ports:
+      - 8000:8000
     volumes:
       - ./backend/static:/code/static
-#    logging:
-#      driver: "json-file"
-#    depends_on:
-#      - db
-#      - es
-#      - kibana
-#    links:
-#      - redis
-
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+    depends_on:
+      - db
+  db:
+    restart: always
+    image: postgres
+    container_name: myapp_db
+    volumes:
+      - ../pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
   nginx:
     image: nginx:latest
     container_name: uks_nginx
     ports:
-      - 80:8000
+      - 1234:8000
     volumes:
       - ./backend/config/nginx:/etc/nginx/conf.d
       - ./backend/static:/code/static
-      - ./backend/logs:/var/log/nginx
+      - ../logs:/var/log/nginx
     depends_on:
       - web
+  nextjs:
+    image: tim6uks_frontend:latest
+    container_name: tim6uks_frontend
+    build:
+        context: ./frontend
+        dockerfile: Dockerfile
+    command: ["npm", "start"]
+    ports:
+      - 3000:3000
