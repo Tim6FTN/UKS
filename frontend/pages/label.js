@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react"
-import LabelService from "../services/labelService"
-import LabelForm from '../components/label/form'
-import LabelRow from '../components/label/row'
+import { useEffect, useState } from "react";
+import LabelService from "../services/labelService";
+import LabelForm from "../components/label/form";
+import LabelRow from "../components/label/row";
+import Navbar from "../components/util/navbar"
+import Container from "../components/util/container";
+
 
 const Label = () => {
   const emptyLabel = {
@@ -41,30 +44,35 @@ const Label = () => {
     setLabelFormHidden(!labelFormHidden)
   }
   return (
-    <div>
-      <h1>LABEL</h1>
+    <>
+      <Navbar />
+      <Container>
+        <div>
+          <h1>LABEL</h1>
 
-      <div>
-        <button className="btn btn-success" onClick={() => newLabel()}>New label</button>
-      </div>
+          <div>
+            <button className="btn btn-success" onClick={() => newLabel()}>
+              New label
+        </button>
+          </div>
 
-      {!labelFormHidden && <LabelForm onCreate={onCreate} label={label} />}
+          {!labelFormHidden && <LabelForm onCreate={onCreate} label={label} />}
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {labelRows()}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <tbody>{labelRows()}</tbody>
+          </table>
+        </div>
+      </Container>
+    </>
+  );
+};
 
 
 
