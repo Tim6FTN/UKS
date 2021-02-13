@@ -34,8 +34,7 @@ services:
       - ./backend/logs:/var/log/nginx
     depends_on:
       - web
-<<<<<<< Updated upstream
-=======
+
   nextjs:
     image: mmilovanovic/tim6uks_frontend:latest
     container_name: tim6uks_frontend
@@ -45,4 +44,3 @@ services:
     command: ["npm", "start"]
     ports:
       - 3000:3000
->>>>>>> Stashed changes
