@@ -10,7 +10,7 @@ const Code = () => {
   const [branches, setBranches] = useState([]);
   const [commits, setCommits] = useState([]);
 
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState("");
   const handleSelect = (event) => {
     let value = event.target.value;
     if (value !== "") {
