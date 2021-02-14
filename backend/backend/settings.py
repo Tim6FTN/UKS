@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'task',
     'repository',
     'change',
-    'comment',
     'rest_framework',
     'polymorphic',
     'django.contrib.admin',
