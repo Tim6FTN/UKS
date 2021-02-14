@@ -1,12 +1,11 @@
-from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 from branch.models import Branch
-from repository.models import Repository
 from branch.serializers import BranchSerializer
+from repository.models import Repository
 
-from rest_framework.response import Response
-from rest_framework.generics import get_object_or_404
 
 # Create your views here.
 class BranchViewSet(viewsets.ModelViewSet):

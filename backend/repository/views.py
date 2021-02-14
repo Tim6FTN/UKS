@@ -6,7 +6,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from repository.models import Repository, Invite
+from project.models import Invite
+from repository.models import Repository
 from repository.serializers import RepositorySerializer, InviteSerializer
 
 
@@ -19,12 +20,12 @@ class RepositoryViewSet(viewsets.ModelViewSet):
         owner = get_object_or_404(User, id=request.data.get('owner').get('id'))
         name = request.data['name']
         description = request.data['description']
-        isPublic = request.data['isPublic']
+        is_public = request.data['isPublic']
 
         if Repository.objects.filter(name=name).exists():
             raise ValidationError(f"Repository with name: {name} already exists")
 
-        repository = Repository.objects.create(owner=owner, name=name, description=description, isPublic=isPublic)
+        repository = Repository.objects.create(owner=owner, name=name, description=description, isPublic=is_public)
         serializer = RepositorySerializer(repository)
         return Response(serializer.data)
 
