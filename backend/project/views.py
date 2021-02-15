@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -16,7 +16,15 @@ from repository.models import Repository
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def retrieve(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=kwargs.get('pk'))
+        if not (project.is_public or project.owner == request.user or project.collaborators.filter(
+                id=request.user.id).exists()):
+            raise PermissionDenied()
+        serializer = ProjectSerializer(project)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         name = request.data['name']
@@ -39,7 +47,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
-        projects = Project.objects.filter(owner=request.user)
+        # Returns project where user is owner or user is in collaborators
+        projects = Project.objects.filter(Q(collaborators__id=request.user.id) | Q(owner=request.user))
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
 

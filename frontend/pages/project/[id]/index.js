@@ -36,8 +36,9 @@ const Project = () => {
             setStarColor("orange");
           setProject(projectResponse.data);
         }
-      } catch (error) {  
-        if (error.response.status === 403){
+      } catch (error) {
+        console.log(error)
+        if (error.response.status === 403) {
           router.push('/')
         }
       }

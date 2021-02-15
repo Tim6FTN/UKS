@@ -7,9 +7,15 @@ const inviteUrl = `${process.env.API_URL}/invite`
 const getAll = () =>
   axios.get(`${projectUrl}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
 
-const getById = async (projectId) =>
-  axios.get(`${projectUrl}/${projectId}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
-;
+const getById = async (projectId) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    return axios.get(`${projectUrl}/${projectId}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
+  } else {
+    return axios.get(`${projectUrl}/${projectId}/`)
+  }
+}
+
 
 const create = (project) =>
   axios
