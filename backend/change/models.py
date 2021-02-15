@@ -7,29 +7,29 @@ from label.models import Label
 from milestone.models import Milestone
 from task.models import Task, PRIORITIES, TASK_STATUSES, STATES
 
+UPDATE = "Update"
+CREATE = "Create"
+DELETE = "Delete"
 CHANGE_TYPES = [
-    ("Update", "Update"),
-    ("Create", "Create"),
-    ("Delete", "Delete")
+    (UPDATE, "Update"),
+    (CREATE, "Create"),
+    (DELETE, "Delete")
 ]
 
 
 class Change(PolymorphicModel):
-
-    change_type = models.CharField(max_length=20, choices=CHANGE_TYPES, default="Update")
+    change_type = models.CharField(max_length=20, choices=CHANGE_TYPES, default=UPDATE)
     description = models.TextField(default='', blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.description
+        return f'{self.timestamp} | {self.change_type} | {self.description}'
 
     non_polymorphic = models.Manager()
 
     class Meta:
-        # abstract = True
         ordering = ['-timestamp']
         base_manager_name = 'non_polymorphic'
-
 
 
 class MilestoneChange(Change):
@@ -97,3 +97,10 @@ class Comment(TaskChange):
 class CommentEdit(models.Model):
     new_text = models.TextField(default='', blank=True)
     comment = models.ForeignKey(to=Comment, null=False, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+
+    def __str__(self):
+        return f'{self.timestamp} | {self.new_text}'
+
+    class Meta:
+        ordering = ['-timestamp']

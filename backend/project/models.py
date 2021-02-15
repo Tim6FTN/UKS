@@ -9,8 +9,8 @@ class Project(models.Model):
     description = models.TextField(default='', blank=True)
     is_public = models.BooleanField(default=True)
     wiki_content = models.TextField(default='')
-    repository = models.OneToOneField(to=Repository, on_delete=models.CASCADE)
-    owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='owner')
+    repository = models.OneToOneField(to=Repository, null=False, on_delete=models.CASCADE)
+    owner = models.ForeignKey(to=User, null=False, on_delete=models.CASCADE, related_name='owner')
     stars = models.ManyToManyField(to=User, blank=True, related_name='stars')
     collaborators = models.ManyToManyField(to=User, blank=True, related_name='collaborators')
 

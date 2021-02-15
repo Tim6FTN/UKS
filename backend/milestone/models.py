@@ -9,7 +9,7 @@ class Milestone(models.Model):
     description = models.TextField(default='', blank=True)
     start_date = models.DateField()
     due_date = models.DateField()
-    project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(to=Project, null=False, on_delete=models.CASCADE)
     labels = models.ManyToManyField(to=Label, blank=True)
 
     def __str__(self):
