@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from label.models import Label
+from datetime import datetime
+
 from milestone.models import Milestone
 from project.models import Project
 
@@ -50,6 +52,15 @@ class Task(models.Model):
     labels = models.ManyToManyField(to=Label, blank=True)
     author = models.ForeignKey(to=User, null=False, on_delete=models.CASCADE, related_name='author')
     assignees = models.ManyToManyField(to=User, blank=True)
+
+    def open_task(self):
+        self.state = "Opened"
+        self.date_opened = datetime.now()
+        self.date_closed = None
+
+    def close_task(self):
+        self.state = 'Closed'
+        self.date_closed = datetime.now()
 
     def __str__(self):
         return self.title
