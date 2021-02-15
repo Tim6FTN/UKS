@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
@@ -26,6 +28,8 @@ COMMITS = "commits"
 REPOSITORY = "repository"
 HTML_URL = "html_url"
 
+COMMIT_REF = "ref"
+COMMIT_BEFORE_SHA = "before"
 COMMIT_ID = "id"
 COMMIT_URL = "url"
 COMMIT_MESSAGE = "message"
@@ -33,6 +37,7 @@ COMMIT_TIMESTAMP = "timestamp"
 COMMIT_AUTHOR = "author"
 COMMIT_AUTHOR_NAME = "name"
 COMMIT_AUTHOR_EMAIL = "email"
+
 
 @webhook_handler.hook(event_type="push")
 def handle_github_push_event(data, *args, **kwargs):
@@ -44,8 +49,11 @@ def handle_github_push_event(data, *args, **kwargs):
     if not projects:
         raise SuspiciousOperation(f'Project with repository URL "{repository_url}" not found.')
 
-    # TODO: Fix this - refs/heads/<branch_name>
-    branch_name = 'main'
+    git_ref = data[COMMIT_REF]
+    branch_name = re.sub('refs/heads/', '', git_ref)
+    # TODO: If required, find the last commit on the branch and verify
+    #  cb_sha = data[COMMIT_BEFORE_SHA]
+
     branches = Branch.objects.filter(repository__project=projects.first(), name=branch_name)
     if not branches:
         raise SuspiciousOperation(f'Branch {None} not found.')
