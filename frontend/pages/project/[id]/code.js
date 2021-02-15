@@ -59,18 +59,19 @@ const Code = () => {
       <Navbar />
       <Container>
         <ProjectWrapper>
-          <BranchList
-            branches={branches}
-            active={active}
-            handleChange={handleSelect}
-            handleAdd={addBranch}
-          />
+        <BranchList
+          branches={branches}
+          active={active}
+          handleChange={handleSelect}
+          handleAdd={addBranch}
+        />
 
-          <CommitList commits={commits} handleAdd={addCommit} />
+        <CommitList commits={commits} handleAdd={addCommit} />
         </ProjectWrapper>
+        
       </Container>
     </div>
   );
 };
 
-export default withAuth(Code);
+export default Code;
