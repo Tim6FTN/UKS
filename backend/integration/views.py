@@ -37,7 +37,9 @@ COMMIT_TIMESTAMP = "timestamp"
 COMMIT_AUTHOR = "author"
 COMMIT_AUTHOR_NAME = "name"
 COMMIT_AUTHOR_EMAIL = "email"
-
+ADDED = "added"
+REMOVED = "removed"
+MODIFIED = "modified"
 
 @webhook_handler.hook(event_type="push")
 def handle_github_push_event(data, *args, **kwargs):
@@ -76,11 +78,19 @@ def handle_commit(commit_data, branch: Branch):
     author_name = author_data[COMMIT_AUTHOR_NAME]
     author_email = author_data[COMMIT_AUTHOR_EMAIL]
 
+    added_files_count = len(commit_data[ADDED])
+    removed_files_count = len(commit_data[REMOVED])
+    modified_files_count = len(commit_data[MODIFIED])
+
     existing_users = User.objects.filter(email=author_email)
     author = existing_users.first()
 
     # TODO: Parse insights data from request
-    commit_meta_data = CommitMetaData.objects.create()
+    commit_meta_data = CommitMetaData.objects.create(
+        file_additions_count=added_files_count,
+        file_deletions_count=removed_files_count,
+        file_modifications_count=modified_files_count
+    )
 
     return Commit.objects.create(
         author_username=author_name,
