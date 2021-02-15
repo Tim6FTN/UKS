@@ -12,12 +12,10 @@ class UserRelatedField(serializers.RelatedField):
       return User.objects.all()
 
   def to_internal_value(self, data):
-    print("to_internal", data)
     user = User.objects.get(username=data)
     return User.objects.get(username=data)
 
   def to_representation(self, value):
-    print("to_representation", value.__dict__)
     return value.username
 
 class MilestoneRelatedField(serializers.RelatedField):

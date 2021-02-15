@@ -34,10 +34,10 @@ router.register(r'user', UserViewSet)
 router.register(r'invite', InviteViewSet)
 router.register(r'branch', BranchViewSet)
 router.register(r'commit', CommitViewSet)
-router.register(r'task', TaskViewSet)
 
 projects_router = nested_router.NestedSimpleRouter(router, r'project', lookup='project')
 projects_router.register(r'label', LabelViewSet)
+projects_router.register(r'task', TaskViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
