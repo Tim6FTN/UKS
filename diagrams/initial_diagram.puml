@@ -1,0 +1,145 @@
+@startuml
+
+title UKS - Class Diagram
+
+'============================================================='
+'Core entities'
+'============================================================='
+together {
+    entity User {
+        + username : String
+        + password : String
+        + email : String
+    }
+}
+
+'============================================================='
+'VCS entities'
+'============================================================='
+together {
+    entity Repository {
+        + url : String
+        + is_public : bool
+        + name : String
+        + description : String
+    }
+    
+    entity Branch {
+        + name : String
+    }
+    
+    entity Commit {
+        + hash_id : String
+        + message : String
+        + timestamp : Date
+    }
+}
+
+'============================================================='
+'Organizational entities'
+'============================================================='
+together {
+    entity Project {
+        + name : String
+        + description : String
+        + is_public : bool
+    }
+    
+    entity Wiki {
+        + content : String
+    }
+    
+    entity Milestone {
+        + title : String
+        + description : String
+        + start_date : Date
+        + due_date : Date
+    }
+    
+    entity Task {
+        + title : String
+        + description : String
+        + opened_date : Date
+        + closed_date : Date
+        + priority : Priority
+        + state : State
+        + status : TaskStatus
+        + attachment : File
+    }
+    
+    entity Label {
+        + name : String
+        + color : String
+    }
+    
+    entity Comment {
+        + text : String
+        + timestamp : Date
+        + attachment : File
+    }
+    
+    together {
+        abstract Change {
+            + description : String
+            + timestamp : Date
+        }
+        
+        entity MilestoneChange {}
+        entity TaskChange {}
+    }
+    
+    together {
+        enum Priority { 
+            + LOW
+            + MEDIUM
+            + HIGH
+        }
+        
+        enum TaskStatus {
+            + TODO
+            + IN_PROGRESS
+            + TESTING
+            + DONE
+        }
+        
+        enum State {
+            + OPEN
+            + CLOSED
+        }
+    }
+}
+
+
+'============================================================='
+'RELATIONSHIPS'
+'============================================================='
+
+Project "0..1" -- "0..1" Repository : connected to >
+Repository "1..1" *-- "1..*" Branch : contains >
+Branch "0..1" *-- "0..*" Commit : contains >
+Commit "0..*" --o "0..1" User : committed by >
+User "0..1" *-- "0..*" Repository : starred >
+User "1..1" *-- "1..*" Repository : owns >
+
+Project "0..*" -- "1..*" User : assigned to <
+Project "0..1" -- "0..1" Wiki : has >
+Project "0..1" *-- "0..*" Milestone : part of < 
+Project "0..1" *-- "0..*" Task : part of <
+
+Milestone "0..1" *-- "0..*" Task : part of <
+Milestone "0..*" -- "0..*" Label : marked with >
+Milestone "0..1" *-- "0..*" MilestoneChange : affects <
+
+Task "0..*" --> "0..1" User : author >
+Task "0..*" o--> "0..*" User : assignees >
+Task "0..*" -- "0..*" Label : marked with >
+Task "0..1" *-- "0..*" Comment : contains <
+Task "0..1" *-- "0..*" TaskChange  : affects <
+
+Comment "0..*" --> "0..1" User : created by >
+Change "0..*" --> "0..1" User : made by
+Change <|-- MilestoneChange : extends <
+Change <|-- TaskChange : extends <
+
+
+@enduml

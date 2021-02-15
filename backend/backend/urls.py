@@ -18,13 +18,14 @@ from django.contrib.auth.models import User
 from django.urls import path, include
 from rest_framework import routers, viewsets
 
+from branch.views import BranchViewSet
+from commit.views import CommitViewSet
 from label.views import LabelViewSet
 from project.views import ProjectViewSet
 from repository.serializers import UserSerializer
-from repository.views import RepositoryViewSet
 from repository.views import InviteViewSet
-from branch.views import BranchViewSet
-from commit.views import CommitViewSet
+from repository.views import RepositoryViewSet
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
