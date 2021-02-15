@@ -15,6 +15,9 @@ class Project(models.Model):
     stars = models.ManyToManyField(to=User, blank=True, related_name='stars')
     collaborators = models.ManyToManyField(to=User, blank=True, related_name='collaborators')
 
+    class Meta:
+        unique_together = ['name', 'owner']
+
     def __str__(self):
         return self.name
 

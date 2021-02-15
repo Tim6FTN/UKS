@@ -15,7 +15,6 @@ const LabelForm = (props) => {
     else {
       LabelService.create(router.query.id, label)
         .then((response) => {
-          console.log(response.data);
           props.onCreate(response.data);
           setLabel(props.label);
         })

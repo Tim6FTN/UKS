@@ -15,7 +15,6 @@ const ProjectNavbar = ({
   useEffect(() => {
     setLoggedIn(localStorage.getItem("token"));
   }, []);
-  console.log(loggedIn);
   return (
     <>
       <div className="row border-dark border-bottom mb-2">
@@ -64,52 +63,46 @@ const ProjectNavbar = ({
       </div>
       <div className="row nav-tabs mb-2">
         <div
-          className={`nav-item nav-link ${
-            route == "/project/[id]" ? "active" : ""
-          }`}
+          className={`nav-item nav-link ${route == "/project/[id]" ? "active" : ""
+            }`}
         >
           <Link href={`/project/${project.id}`}>
             <a style={{ textDecorationLine: "none" }}> Readme </a>
           </Link>
         </div>
         <div
-          className={`nav-item nav-link ${
-            route == "/project/[id]/code" ? "active" : ""
-          }`}
+          className={`nav-item nav-link ${route == "/project/[id]/code" ? "active" : ""
+            }`}
         >
           <Link href={`/project/${project.id}/code`}>
             <a style={{ textDecorationLine: "none" }}> Code </a>
           </Link>
         </div>
         <div
-          className={`nav-item nav-link ${
-            route == "/project/[id]/tasks" ? "active" : ""
-          }`}
+          className={`nav-item nav-link ${route == "/project/[id]/tasks" ? "active" : ""
+            }`}
         >
           {" "}
           <a style={{ textDecorationLine: "none" }}> Tasks </a>
         </div>
         <div
-          className={`nav-item nav-link ${
-            route == "/project/[id]/kanban" ? "active" : ""
-          }`}
+          className={`nav-item nav-link ${route == "/project/[id]/kanban" ? "active" : ""
+            }`}
         >
           {" "}
           <a style={{ textDecorationLine: "none" }}> Kanban </a>
         </div>
         <div
-          className={`nav-item nav-link ${
-            route == "/project/[id]/wiki" ? "active" : ""
-          }`}
+          className={`nav-item nav-link ${route == "/project/[id]/wiki" ? "active" : ""
+            }`}
         >
           {" "}
           <a style={{ textDecorationLine: "none" }}> Wiki </a>
         </div>
         {loggedIn && (
           <div
-            className={`nav-item nav-link ${
-              route == "/project/[id]/invite" ? "active" : ""
-            }`}
+            className={`nav-item nav-link ${route == "/project/[id]/invite" ? "active" : ""
+              }`}
           >
             {" "}
             <Link href={`/project/${project.id}/invite`}>
@@ -119,9 +112,8 @@ const ProjectNavbar = ({
         )}
         {loggedIn && (
           <div
-            className={`nav-item nav-link ${
-              route == "/project/[id]/label" ? "active" : ""
-            }`}
+            className={`nav-item nav-link ${route == "/project/[id]/label" ? "active" : ""
+              }`}
           >
             {" "}
             <Link href={`/project/${project.id}/label`}>

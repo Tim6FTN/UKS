@@ -22,9 +22,9 @@ const Register = () => {
   };
 
   useEffect(() => {
-    if(registerInfo.password1 !== registerInfo.password2){
+    if (registerInfo.password1 !== registerInfo.password2) {
       setError('Passwords must match')
-    }else {
+    } else {
       setError(null)
     }
   }, [registerInfo])
@@ -54,15 +54,18 @@ const Register = () => {
               value={registerInfo.username}
               onChange={onChange("username")}
               placeholder="Username"
+              required
             ></input>
           </div>
 
           <div className="form-group">
             <input
+              type="email"
               className="form-control"
               value={registerInfo.email}
               onChange={onChange("email")}
               placeholder="Email"
+              required
             ></input>
           </div>
 
@@ -94,6 +97,7 @@ const Register = () => {
               value={registerInfo.github_username}
               onChange={onChange("github_username")}
               placeholder="Github username"
+              required
             ></input>
           </div>
 

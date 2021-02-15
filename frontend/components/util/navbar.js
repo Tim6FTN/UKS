@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../contexts/userContext";
 const Navbar = () => {
   const router = useRouter();
   const [tokenExsists, setTokenExists] = useState(true);
+
+  const { user, resetUser } = useContext(UserContext);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -13,6 +16,7 @@ const Navbar = () => {
   const logout = (event) => {
     event.preventDefault();
     localStorage.removeItem("token");
+    resetUser();
     setTokenExists(false);
     window.location.reload();
   };
@@ -24,7 +28,7 @@ const Navbar = () => {
           <Link href="/">
             <a className="navbar-brand">Home</a>
           </Link>
-          {tokenExsists && (
+          {user && (
             <ul className="navbar-nav">
               <li
                 className={`nav-item ${
@@ -39,7 +43,7 @@ const Navbar = () => {
           )}
 
           <ul className="navbar-nav ml-auto">
-            {!tokenExsists && (
+            {!user && (
               <li
                 className={`nav-item ${
                   router.pathname == "/login" ? "active" : ""
@@ -50,7 +54,7 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-            {!tokenExsists && (
+            {!user && (
               <li
                 className={`nav-item ${
                   router.pathname == "/register" ? "active" : ""
@@ -62,18 +66,18 @@ const Navbar = () => {
               </li>
             )}
 
-            {tokenExsists && (
+            {user && (
               <li
                 className={`nav-item ${
                   router.pathname === "profile" ? "active" : ""
                 }`}
               >
                 <Link href="/profile">
-                  <a className="nav-link">Profile</a>
+                  <a className="nav-link">{user?.username}</a>
                 </Link>
               </li>
             )}
-            {tokenExsists && (
+            {user && (
               <li className="nav-item">
                 <a className="nav-link" href="#" onClick={logout}>
                   Logout

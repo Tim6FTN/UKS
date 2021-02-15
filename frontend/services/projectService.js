@@ -1,45 +1,49 @@
 import axios from "axios";
 
-const projectUrl = `${process.env.API_URL}/project`
-const inviteUrl = `${process.env.API_URL}/invite`
-
+const projectUrl = `${process.env.API_URL}/project`;
 
 const getAll = () =>
-  axios.get(`${projectUrl}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
+  axios.get(`${projectUrl}/`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
 
 const getById = async (projectId) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
   if (token) {
-    return axios.get(`${projectUrl}/${projectId}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
+    return axios.get(`${projectUrl}/${projectId}/`, {
+      headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+    });
   } else {
-    return axios.get(`${projectUrl}/${projectId}/`)
+    return axios.get(`${projectUrl}/${projectId}/`);
   }
-}
-
+};
 
 const create = (project) =>
   axios
-    .post(`${projectUrl}/`, project, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } })
+    .post(`${projectUrl}/`, project, {
+      headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+    })
     .catch((error) => alert(error));
 
 const remove = (projectId) =>
-  axios.delete(`${projectUrl}/${projectId}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
+  axios.delete(`${projectUrl}/${projectId}/`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
 
 const update = (projectId, project) =>
-  axios.put(`${projectUrl}/${projectId}/`, project, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
+  axios.put(`${projectUrl}/${projectId}/`, project, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
 
-const addStar = id =>
-  axios.get(`${projectUrl}/${id}/star`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } })
+const addStar = (id) =>
+  axios.get(`${projectUrl}/${id}/star`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
 
-const getTopFive = () =>
-  axios.get(`${projectUrl}/getTopFive/`)
+const getTopFive = () => axios.get(`${projectUrl}/getTopFive/`);
 
 const search = (searchValue) =>
-  axios.get(`${projectUrl}/search/`, { params: { value: searchValue } })
-
-const invite = invite =>
-  axios.post(`${inviteUrl}/`, invite, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } })
-
+  axios.get(`${projectUrl}/search/`, { params: { value: searchValue } });
 
 const ProjectService = {
   getAll,
@@ -50,7 +54,6 @@ const ProjectService = {
   addStar,
   getTopFive,
   search,
-  invite
 };
 
 export default ProjectService;

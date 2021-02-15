@@ -27,7 +27,6 @@ const Project = () => {
           setProject(projectResponse.data);
         }
       } catch (error) {
-        console.log(error);
         if (error.response.status === 403) {
           router.push("/");
         }

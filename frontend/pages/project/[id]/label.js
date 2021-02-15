@@ -48,7 +48,6 @@ const Label = () => {
   };
 
   const onUpdate = (updatedLabel) => {
-    console.log(updatedLabel);
     setLabels(
       labels.map((label) =>
         label.id === updatedLabel.id ? { ...updatedLabel } : label

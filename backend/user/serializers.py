@@ -20,6 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         github_username = validated_data.pop('github_username')
+        password = validated_data.pop('password')
         user = User.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
         GithubProfile.objects.create(github_username=github_username, user=user)
         return user

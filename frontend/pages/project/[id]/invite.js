@@ -5,6 +5,7 @@ import Navbar from "../../../components/util/navbar";
 import Container from "../../../components/util/container";
 import withAuth from "../../../components/util/withAuth";
 import ProjectWrapper from "../../../components/project/wrapper";
+import InviteService from "../../../services/inviteService";
 
 const Invite = () => {
   const [username, setUsername] = useState("");
@@ -13,10 +14,12 @@ const Invite = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    ProjectService.invite({
+    InviteService.create({
       username: username,
       projectId: router.query.id,
-    }).then(() => setMessage(`Invite sent to ${username}`)).catch(() => setMessage('User not found'));
+    })
+      .then(() => setMessage(`Invite sent to ${username}`))
+      .catch(() => setMessage("User not found"));
   };
 
   return (
@@ -32,10 +35,11 @@ const Invite = () => {
                     className="form-control"
                     value={username}
                     onChange={(event) => {
-                      setUsername(event.target.value)
-                      setMessage('')
+                      setUsername(event.target.value);
+                      setMessage("");
                     }}
                     placeholder="Username"
+                    required
                   />
                 </div>
                 <div className="col text-left">

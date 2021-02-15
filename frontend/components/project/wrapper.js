@@ -33,7 +33,6 @@ const ProjectWrapper = ({ children }) => {
           setLoading(false)
         }
       } catch (error) {
-        console.log(error);
         if (error.response.status === 403) {
           router.push("/");
         }
@@ -63,7 +62,7 @@ const ProjectWrapper = ({ children }) => {
         addStar={addStar}
         starColor={starColor}
         loading={loading}
-        route = {router.route}
+        route={router.route}
       />
       {children}
     </>
