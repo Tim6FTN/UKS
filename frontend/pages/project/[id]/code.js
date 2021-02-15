@@ -6,6 +6,7 @@ import CommitList from "../../../components/commit/list";
 import { useRouter } from "next/router";
 import CodeService from "../../../services/codeService";
 import withAuth from "../../../components/util/withAuth";
+import ProjectWrapper from "../../../components/project/wrapper";
 
 const Code = () => {
   const [branches, setBranches] = useState([]);
@@ -57,14 +58,16 @@ const Code = () => {
     <div>
       <Navbar />
       <Container>
-        <BranchList
-          branches={branches}
-          active={active}
-          handleChange={handleSelect}
-          handleAdd={addBranch}
-        />
+        <ProjectWrapper>
+          <BranchList
+            branches={branches}
+            active={active}
+            handleChange={handleSelect}
+            handleAdd={addBranch}
+          />
 
-        <CommitList commits={commits} handleAdd={addCommit} />
+          <CommitList commits={commits} handleAdd={addCommit} />
+        </ProjectWrapper>
       </Container>
     </div>
   );
