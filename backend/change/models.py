@@ -97,7 +97,7 @@ class Comment(TaskChange):
 class CommentEdit(models.Model):
     new_text = models.TextField(default='', blank=True)
     comment = models.ForeignKey(to=Comment, null=False, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.timestamp} | {self.new_text}'
