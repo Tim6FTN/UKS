@@ -15,6 +15,7 @@ const Navbar = () => {
     event.preventDefault()
     localStorage.removeItem('token')
     setTokenExists(false)
+    window.location.reload()
   }
 
   return (

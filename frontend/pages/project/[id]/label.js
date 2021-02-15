@@ -5,6 +5,7 @@ import LabelRow from "../../../components/label/row";
 import Navbar from "../../../components/util/navbar"
 import Container from "../../../components/util/container";
 import { useRouter } from "next/router";
+import withAuth from "../../../components/util/withAuth";
 
 
 const Label = () => {
@@ -80,4 +81,4 @@ const Label = () => {
 
 
 
-export default Label
+export default withAuth(Label)

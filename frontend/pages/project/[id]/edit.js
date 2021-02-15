@@ -2,6 +2,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import Container from "../../../components/util/container"
 import Navbar from "../../../components/util/navbar"
+import withAuth from "../../../components/util/withAuth"
 import ProjectService from "../../../services/projectService"
 
 const EditRepository = () => {
@@ -43,4 +44,4 @@ const EditRepository = () => {
   )
 }
 
-export default EditRepository
+export default withAuth(EditRepository)

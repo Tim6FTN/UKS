@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import ProjectService from '../../../services/projectService'
 import Navbar from "../../../components/util/navbar";
 import Container from "../../../components/util/container";
+import withAuth from "../../../components/util/withAuth";
 
 const Invite = () => {
   const [username, setUsername] = useState("");
@@ -38,4 +39,4 @@ const Invite = () => {
   );
 };
 
-export default Invite;
+export default withAuth(Invite);

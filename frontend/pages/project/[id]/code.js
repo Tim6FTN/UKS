@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import CommitList from "../../../components/commit/list";
 import { useRouter } from "next/router";
 import CodeService from "../../../services/codeService";
+import withAuth from "../../../components/util/withAuth";
 
 const Code = () => {
   const [branches, setBranches] = useState([]);
@@ -69,4 +70,4 @@ const Code = () => {
   );
 };
 
-export default Code;
+export default withAuth(Code);

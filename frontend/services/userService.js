@@ -1,17 +1,17 @@
 import axios from 'axios'
 
-const url = `${process.env.API_URL}/user`
+const userUrl = `${process.env.API_URL}/user`
 
 const authUrl = `${process.env.API_URL}/api-token-auth/`
 
 const getAll = () =>
-  axios.get(`${url}/`)
+  axios.get(`${userUrl}/`)
 
 const login = credentials =>
   axios.post(authUrl, credentials)
 
 const register = registerInfo =>
-  axios.post()
+  axios.post(`${userUrl}/`, registerInfo)
 
 const UserService = {
   getAll,

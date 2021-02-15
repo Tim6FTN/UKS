@@ -7,11 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { faBook, faLock } from '@fortawesome/free-solid-svg-icons'
 import ProjectService from "../../services/projectService"
-
+import withAuth from "../../components/util/withAuth"
 
 
 const Projects = () => {
-
   const [projects, setProjects] = useState([])
 
   useEffect(() => {
@@ -50,4 +49,4 @@ const Projects = () => {
   </>
 }
 
-export default Projects
+export default withAuth(Projects)
