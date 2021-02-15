@@ -18,7 +18,6 @@ class Project(models.Model):
         return self.name
 
 
-# TODO: Should be added to UML model.
 class Invite(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='user')
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name='project')
