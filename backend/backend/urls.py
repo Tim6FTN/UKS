@@ -20,6 +20,7 @@ from rest_framework import routers, viewsets
 
 from branch.views import BranchViewSet
 from commit.views import CommitViewSet
+from integration.views import receive_webhook_request
 from label.views import LabelViewSet
 from project.views import ProjectViewSet
 from repository.serializers import UserSerializer
@@ -45,4 +46,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
     path('api-auth', include('rest_framework.urls')),
+    path('notify', receive_webhook_request)
 ]
