@@ -1,3 +1,28 @@
+BLANK_LINE = "\n\n"
+
+COMMITS = "commits"
+REPOSITORY = "repository"
+HTML_URL = "html_url"
+PRIVATE = "private"
+COMPARE_URL = "compare_url"
+
+COMMIT_REF = "ref"
+COMMIT_BEFORE = "before"
+COMMIT_ID = "id"
+COMMIT_URL = "url"
+COMMIT_MESSAGE = "message"
+COMMIT_TIMESTAMP = "timestamp"
+COMMIT_AUTHOR = "author"
+COMMIT_AUTHOR_NAME = "name"
+COMMIT_AUTHOR_EMAIL = "email"
+ADDED = "added"
+REMOVED = "removed"
+MODIFIED = "modified"
+FILES = "files"
+ADDITIONS = "additions"
+DELETIONS = "deletions"
+CHANGES = "changes"
+
 GITHUB_EVENT_DESCRIPTIONS = {
     "commit_comment": "{comment[user][login]} commented on " "{comment[commit_id]} in {repository[full_name]}",
     "create": "{sender[login]} created {ref_type} ({ref}) in " "{repository[full_name]}",
