@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import RepositoryService from "../../../services/repositoryService";
+import ProjectService from '../../../services/projectService'
 import Navbar from "../../../components/util/navbar";
 import Container from "../../../components/util/container";
 
@@ -10,10 +10,10 @@ const Invite = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    RepositoryService.invite({
+    ProjectService.invite({
       username: username,
-      repositoryId: router.query.id,
-    });
+      projectId: router.query.id,
+    }).then(response => router.push(`/project/${router.query.id}`));
   };
 
   return (

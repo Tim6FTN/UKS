@@ -6,33 +6,34 @@ import Container from "../../components/util/container"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { faBook, faLock } from '@fortawesome/free-solid-svg-icons'
+import ProjectService from "../../services/projectService"
 
 
 
-const Repositories = () => {
+const Projects = () => {
 
-  const [repositories, setRepositories] = useState([])
+  const [projects, setProjects] = useState([])
 
   useEffect(() => {
-    RepositoryService.getAll().then(response => setRepositories(response.data))
+    ProjectService.getAll().then(response => setProjects(response.data))
   }, [])
 
-  const links = () => repositories.map(repository =>
-    <tr key={repository.id}>
-      <td>{repository.isPublic ? <FontAwesomeIcon className="m-2" icon={faBook} size="2x" /> : <FontAwesomeIcon className="m-2" icon={faLock} size="2x" />}</td>
-      <td><span className="h5"><Link key={repository.id} href={`/repository/${repository.id}`}>{repository.name}</Link></span></td>
+  const links = () => projects.map(project =>
+    <tr key={project.id}>
+      <td>{project.is_public ? <FontAwesomeIcon className="m-2" icon={faBook} size="2x" /> : <FontAwesomeIcon className="m-2" icon={faLock} size="2x" />}</td>
+      <td><span className="h5"><Link key={project.id} href={`/project/${project.id}`}>{project.name}</Link></span></td>
     </tr>)
   return <>
     <Navbar />
     <Container>
       <div className="row">
         <div className="col text-center">
-          <h1>REPOSITORIES</h1>
+          <h1>PROJECTS</h1>
         </div>
         <div className="col text-center">
-          <Link href="/repository/new">
+          <Link href="/project/new">
             <button className="btn btn-success">
-              New repository
+              New project
         </button>
           </Link>
         </div>
@@ -49,4 +50,4 @@ const Repositories = () => {
   </>
 }
 
-export default Repositories
+export default Projects

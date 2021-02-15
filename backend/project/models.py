@@ -5,6 +5,7 @@ from repository.models import Repository
 
 
 class Project(models.Model):
+    # TODO: Add unique True
     name = models.CharField(max_length=100)
     description = models.TextField(default='', blank=True)
     is_public = models.BooleanField(default=True)

@@ -1,19 +1,18 @@
 import axios from "axios"
 
-const getAll = () =>
-  axios.get("http://localhost:8000/label/")
+const labelUrl = projectId => `${process.env.API_URL}/project/${projectId}/label`
 
+const getAll = (projectId) =>
+  axios.get(`${labelUrl(projectId)}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } })
 
-const create = (label) =>
-  axios.post("http://localhost:8000/label/", label);
+const create = (projectId, label) =>
+  axios.post(`${labelUrl(projectId)}/`, label, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } });
 
+const remove = (projectId, labelId) =>
+  axios.delete(`${labelUrl(projectId)}/${labelId}/`, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } })
 
-const remove = (labelId) =>
-  axios.delete(`http://localhost:8000/label/${labelId}/`)
-
-
-const update = (labelId, label) =>
-  axios.put(`http://localhost:8000/label/${labelId}/`, label)
+const update = (projectId, labelId, label) =>
+  axios.put(`${labelUrl(projectId)}/${labelId}/`, label, { headers: { "Authorization": `Token ${localStorage.getItem('token')}` } })
 
 const LabelService = {
   getAll,

@@ -1,16 +1,25 @@
+import { useRouter } from "next/router"
 import { useState } from "react"
 import LabelService from "../../services/labelService"
 
 const LabelForm = (props) => {
 
   const [label, setLabel] = useState(props.label)
+  const router = useRouter()
 
   const submit = (event) => {
     event.preventDefault();
     if (label.id)
-      LabelService.update(label.id, label).then(response => { props.onUpdate(response.data) })
-    else
-      LabelService.create(label).then(response => { props.onCreate(response.data); setLabel(props.label) }).catch(error => alert(error))
+      LabelService.update(router.query.id, label.id, label).then(response => { props.onUpdate(response.data) })
+    else {
+      LabelService.create(router.query.id, label)
+        .then(response => {
+          console.log(response.data);
+          props.onCreate(response.data);
+          setLabel(props.label)
+        })
+        .catch(error => alert(error))
+    }
   }
   return (
     <div>

@@ -3,22 +3,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Link from 'next/link'
 
 
-const RepositoryCard = ({ repository }) => {
+const ProjectCard = ({ project }) => {
   return (
     <>
       <div className="card bg-light mb-3">
         <div className="card-header">
 
           <FontAwesomeIcon icon={faUser} className="mr-2"></FontAwesomeIcon>
-          {repository.owner.username}</div>
+          {project.owner.username}</div>
         <div className="card-body">
-          <h5 className="card-title"><Link href={`/repository/${repository.id}`}>{repository.name}</Link></h5>
+          <h5 className="card-title"><Link href={`/project/${project.id}`}>{project.name}</Link></h5>
 
         </div>
         <div className="card-footer">
           <p className="card-text">
             <FontAwesomeIcon icon={faStar} className="mr-2" ></FontAwesomeIcon>
-            {repository.stars.length}
+            {project.stars.length}
           </p>
         </div>
       </div>
@@ -26,4 +26,4 @@ const RepositoryCard = ({ repository }) => {
   )
 }
 
-export default RepositoryCard
+export default ProjectCard

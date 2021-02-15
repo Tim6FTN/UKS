@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Repository(models.Model):
+    # TODO: Check unique True
     url = models.CharField(max_length=300, unique=True)
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(default='', blank=True)

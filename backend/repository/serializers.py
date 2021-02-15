@@ -21,16 +21,4 @@ class RepositorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'is_public', 'project']
 
 
-class InviteRepositorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Repository
-        fields = ['id', 'name']
 
-
-class InviteSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    repository = InviteRepositorySerializer(read_only=True)
-
-    class Meta:
-        model = Invite
-        fields = ['id', 'user', 'repository']

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import LabelService from "../services/labelService";
-import LabelForm from "../components/label/form";
-import LabelRow from "../components/label/row";
-import Navbar from "../components/util/navbar"
-import Container from "../components/util/container";
+import LabelService from "../../../services/labelService";
+import LabelForm from "../../../components/label/form";
+import LabelRow from "../../../components/label/row";
+import Navbar from "../../../components/util/navbar"
+import Container from "../../../components/util/container";
+import { useRouter } from "next/router";
 
 
 const Label = () => {
@@ -15,19 +16,21 @@ const Label = () => {
   const [label, setLabel] = useState(emptyLabel)
   const [labels, setLabels] = useState([])
   const [labelFormHidden, setLabelFormHidden] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
-    LabelService.getAll().then(response => setLabels(response.data))
-  }, [])
+    if (router.query.id)
+      LabelService.getAll(router.query.id).then(response => setLabels(response.data))
+  }, [router.query.id])
 
   const labelRows = () =>
     labels.map((label, index) =>
       <LabelRow key={index} label={label} tryDelete={tryDelete} onUpdate={onUpdate} />
     )
 
-  const tryDelete = id => {
+  const tryDelete = (projectId, labelId) => {
     if (window.confirm("Are you sure you want to delete this Label?"))
-      LabelService.remove(id).then(response => setLabels(labels.filter(label => label.id !== id)))
+      LabelService.remove(projectId, labelId).then(response => setLabels(labels.filter(label => label.id !== labelId)))
   }
 
   const onCreate = (newLabel) => {
