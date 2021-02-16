@@ -16,7 +16,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'owner', 'description', 'repository', 'stars', 'is_public']
+        fields = ['id', 'name', 'owner', 'description', 'repository', 'stars', 'is_public', 'wiki_content']
 
 
 class InviteProjectSerializer(serializers.ModelSerializer):

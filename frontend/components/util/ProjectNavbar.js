@@ -99,11 +99,13 @@ const ProjectNavbar = ({
         </div>
         <div
           className={`nav-item nav-link ${
-            route == "/project/[id]/wiki" ? "active" : ""
+            route === "/project/[id]/wiki" ? "active" : ""
           }`}
         >
           {" "}
-          <a style={{ textDecorationLine: "none" }}> Wiki </a>
+          <Link href={`/project/${project.id}/wiki`}>
+            <a style={{ textDecorationLine: "none" }}> Wiki </a>
+          </Link>
         </div>
         {loggedIn && (
           <div
