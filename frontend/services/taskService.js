@@ -9,6 +9,14 @@ const getAll = async (projectId) =>
     },
   });
 
+const get = async(projectId, taskId) => {
+  return await axios.get(`${taskUrl(projectId)}${taskId}`, {
+    headers: {
+      'Authorization': `Token ${localStorage.getItem('token')}`
+    }
+  })
+}
+
 const create = async (projectId, task) =>
   await axios.post(`${taskUrl(projectId)}`, task, {
     headers: {
@@ -31,6 +39,7 @@ const closeTask = async (projectId, taskId) =>
   });
 
 const TaskService = {
+  get,
   getAll,
   create,
   openTask,

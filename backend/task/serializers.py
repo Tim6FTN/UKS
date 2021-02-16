@@ -42,6 +42,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
   def create(self, validated_data):
     assignees = validated_data.pop('assignees', [])
+    labels = validated_data.pop('labels', [])
+
     author = self.context.get('author', None)
     project = self.context.get('project', None)
 
@@ -54,6 +56,10 @@ class TaskSerializer(serializers.ModelSerializer):
 
     for author in assignees:
       task.assignees.add(author)
+
+    for label in labels:
+      task.labels.add(label)
+
     return task
 
   def get_date_opened(self, instance):
