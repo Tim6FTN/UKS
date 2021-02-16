@@ -21,10 +21,21 @@ const emptyContentState = Draft.convertFromRaw({
     ],
 });
 
-const RichEditor = ({project}) => {
+const RichEditor = ({project, user}) => {
     const [editorState, setEditorState] = React.useState(EditorState.createWithContent(emptyContentState));
+    const [isEditable, setIsEditable] = React.useState(false);
+    const [isMine, setIsMine] = React.useState(false);
+
     const editor = React.useRef(null);
     const router = useRouter();
+
+    React.useEffect(() => {
+        if (user && project) {
+            const isMine = project.owner.id === user.id || project.collaborators?.find((el) => el.id === user.id);
+            setIsEditable(isMine);
+            setIsMine(isMine);
+        }
+    }, [user, project]);
 
     React.useEffect(() => {
         let contentState = stateFromHTML(project?.wiki_content);
@@ -65,42 +76,75 @@ const RichEditor = ({project}) => {
 
     return (
         <>
-            <div style={{
-                border: "1px solid lightgrey",
-                padding: '0 7px 0 7px',
-                borderRadius: '8px',
-                minHeight: "30em",
-                cursor: "text"
-            }}
-                 onClick={() => editor.current.focus()}>
-                <div className="row px-3 justify-content-between">
-                    <InlineStyleControls
-                        editorState={editorState}
-                        onToggle={toggleInlineStyle}
-                    />
-                    <BlockStyleControls
-                        editorState={editorState}
-                        onToggle={toggleBlockType}
-                    />
-                </div>
-                <hr style={{margin: '0'}}/>
-                <div style={{marginTop: 10}}>
-                    <Editor
-                        ref={editor}
-                        editorKey="editorkey"
-                        editorState={editorState}
-                        onChange={onChange}
-                        placeholder="Write your wiki content here..."
-                        handleKeyCommand={handleKeyCommand}
-                    />
-                </div>
-            </div>
-            <div className="container bg-light mt-1 rounded">
-                <div className="row justify-content-between p-3">
-                    <button className="btn btn-success" onClick={onSubmit}>Submit wiki</button>
-                    <button className="btn btn-light" onClick={() => router.push(`/project/${project.id}`)}>Cancel</button>
-                </div>
-            </div>
+            {
+                isEditable ?
+                    <>
+                        <div style={{
+                            border: "1px solid lightgrey",
+                            padding: '0 7px 0 7px',
+                            borderRadius: '8px',
+                            minHeight: "30em",
+                            cursor: "text"
+                        }}
+                             onClick={() => editor.current.focus()}>
+                            <div className="row px-3 justify-content-between">
+                                <InlineStyleControls
+                                    editorState={editorState}
+                                    onToggle={toggleInlineStyle}
+                                />
+                                <BlockStyleControls
+                                    editorState={editorState}
+                                    onToggle={toggleBlockType}
+                                />
+                            </div>
+                            <hr style={{margin: '0'}}/>
+                            <div style={{marginTop: 10}}>
+                                <Editor
+                                    readOnly={!isEditable}
+                                    ref={editor}
+                                    editorKey="editorkey"
+                                    editorState={editorState}
+                                    onChange={onChange}
+                                    placeholder="Write your wiki content here..."
+                                    handleKeyCommand={handleKeyCommand}
+                                />
+                            </div>
+                        </div>
+                        <div className="container bg-light mt-1 rounded">
+                            <div className="row justify-content-between p-3">
+                                <div>
+                                <button className="btn btn-success" onClick={onSubmit}>Submit wiki</button>
+                                <button className="btn btn-info ml-2"
+                                        onClick={() => setIsEditable(!isEditable)}>
+                                    Preview
+                                </button>
+                                </div>
+                                <button className="btn btn-light"
+                                        onClick={() => router.push(`/project/${project.id}`)}>Cancel
+                                </button>
+
+                            </div>
+                        </div>
+                    </> :
+                    <div style={{marginTop: 10}}>
+                        <Editor
+                            readOnly={true}
+                            ref={editor}
+                            editorKey="editorkey"
+                            editorState={editorState}
+                        />
+                        {isMine &&
+                            <div>
+                                <hr/>
+                                <button
+                                    className="btn btn-info"
+                                    onClick={() => setIsEditable(!isEditable)}>
+                                    Back to edit
+                                </button>
+                            </div>
+                        }
+                    </div>
+            }
         </>
     );
 };

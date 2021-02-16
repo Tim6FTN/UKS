@@ -13,10 +13,12 @@ class UserSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     stars = UserSerializer(many=True, read_only=True)
+    collaborators = UserSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'owner', 'description', 'repository', 'stars', 'is_public', 'wiki_content']
+        fields = ['id', 'name', 'owner', 'description', 'repository', 'stars', 'collaborators', 'is_public',
+                  'wiki_content']
 
 
 class InviteProjectSerializer(serializers.ModelSerializer):
