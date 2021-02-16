@@ -19,6 +19,7 @@ from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 from branch.views import BranchViewSet
 from commit.views import CommitViewSet
+from integration.views import receive_webhook_request
 from label.views import LabelViewSet
 from project.views import ProjectViewSet, InviteViewSet
 from user.views import UserViewSet
@@ -42,4 +43,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth', include('rest_framework.urls')),
     path('api/api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('notify', receive_webhook_request, name='notify')
 ]

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'task',
     'repository',
     'change',
+    'integration',
     'user',
     'rest_framework',
     'rest_framework.authtoken',
