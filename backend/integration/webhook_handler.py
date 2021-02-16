@@ -6,6 +6,7 @@ import hashlib
 import hmac
 
 from django.core.exceptions import SuspiciousOperation
+from django.core.handlers.wsgi import WSGIRequest
 
 from integration.constants import GITHUB_EVENT_DESCRIPTIONS
 
@@ -41,16 +42,16 @@ class WebhookHandler:
         return decorator
 
     @staticmethod
-    def _get_header(key, request):
+    def _get_header(key: str, request: WSGIRequest) -> str:
         try:
             return request.headers[key]
         except KeyError:
-            raise SuspiciousOperation(f'"Missing header: {key}')
+            raise SuspiciousOperation(f'Missing header: {key}')
 
-    def _get_digest(self, request):
+    def _get_digest(self, request: WSGIRequest) -> hmac.HMAC:
         return hmac.new(self.__secret, request.body, hashlib.sha256).hexdigest() if self.__secret else None
 
-    def handle(self, request):
+    def handle(self, request: WSGIRequest):
         digest = self._get_digest(request)
         if digest is not None:
             if not isinstance(digest, six.text_type):
@@ -72,23 +73,23 @@ class WebhookHandler:
             raise SuspiciousOperation("Unsupported operation.")
             # json.loads(request.form.to_dict(flat=True)["payload"])
         elif content_type == "application/json":
-            request_data = json.loads(request.body.decode("utf-8"))
+            try:
+                request_data = json.loads(request.body.decode("utf-8"))
+            except Exception:
+                raise SuspiciousOperation("Request body must contain valid JSON data.")
 
-        if request_data is None:
-            raise SuspiciousOperation("Request body must contain valid JSON data.")
-
-        print(f'{_format_event(event_type, request_data)} '
-              f'{self._get_header(WebhookHandler.X_GITHUB_DELIVERY, request)}')
-        self.__logger.debug("%s (%s)",
-                            _format_event(event_type, request_data),
-                            self._get_header(WebhookHandler.X_GITHUB_DELIVERY, request))
+        print(f'{WebhookHandler.X_GITHUB_DELIVERY}: {self._get_header(WebhookHandler.X_GITHUB_DELIVERY, request)} | ',
+              f'{_format_event(event_type, request_data)}')
+        self.__logger.debug(
+            f'{WebhookHandler.X_GITHUB_DELIVERY}: {self._get_header(WebhookHandler.X_GITHUB_DELIVERY, request)} | ',
+            f'{_format_event(event_type, request_data)}')
 
         for handler in self.__hooks.get(event_type, []):
             handler(request_data)
 
 
-def _format_event(event_type, data):
+def _format_event(event_type: str, data: dict) -> str:
     try:
-        GITHUB_EVENT_DESCRIPTIONS[event_type].format(**data)
+        return GITHUB_EVENT_DESCRIPTIONS[event_type].format(**data)
     except KeyError:
         return event_type
