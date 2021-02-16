@@ -1,5 +1,8 @@
+import asyncio
 import re
-import requests
+
+import httpx as httpx
+from asgiref.sync import sync_to_async
 
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
@@ -82,7 +85,11 @@ def handle_commit(commit_data: dict, branch: Branch, sha_of_previous_commit: str
     existing_users = User.objects.filter(email=author_email)
     author = existing_users.first()
 
-    commit_meta_data = diff_handler_func(commit_data, sha_of_previous_commit, compare_url_template)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    task = loop.create_task(diff_handler_func(commit_data, sha_of_previous_commit, compare_url_template))
+    task_results, _ = loop.run_until_complete(asyncio.wait([task]))
+    commit_meta_data = task_results.pop().result()
 
     return Commit.objects.create(
         author_username=author_name,
@@ -96,13 +103,19 @@ def handle_commit(commit_data: dict, branch: Branch, sha_of_previous_commit: str
         author=author)
 
 
-def handle_public_diff(commit_data: dict, sha_of_previous_commit: str, compare_url_template: str) -> CommitMetaData:
+async def handle_public_diff(commit_data: dict, sha_of_previous_commit: str, compare_url_template: str) -> CommitMetaData:
     compare_url = re.sub('{base}', sha_of_previous_commit, compare_url_template)
     compare_url = re.sub('{head}', commit_data[COMMIT_ID], compare_url)
 
-    diff_response = requests.get(url=compare_url)       # TODO: Add handling of unsuccessful request. Async.
-    diff_data = diff_response.json()
-    diff_files = diff_data[FILES]
+    diff_files = []
+    try:
+        async with httpx.AsyncClient() as client:
+            diff_response = await asyncio.gather(client.get(compare_url))
+            if  diff_response[0].status_code == httpx.codes.OK:
+                diff_data =  diff_response[0].json()
+                diff_files = diff_data[FILES]
+    except httpx.RequestError as e:
+        print(f'An error occurred while requesting diff on URL {e.request.url!r}.')
 
     added_lines_count, deleted_lines_count, modified_lines_count = 0, 0, 0
     for file in diff_files:
@@ -110,7 +123,7 @@ def handle_public_diff(commit_data: dict, sha_of_previous_commit: str, compare_u
         deleted_lines_count += file[DELETIONS]
         modified_lines_count += file[CHANGES]
 
-    return CommitMetaData.objects.create(
+    return await sync_to_async(CommitMetaData.objects.create)(
         file_additions_count=len(commit_data[ADDED]),
         file_deletions_count=len(commit_data[REMOVED]),
         file_modifications_count=len(commit_data[MODIFIED]),
@@ -120,8 +133,8 @@ def handle_public_diff(commit_data: dict, sha_of_previous_commit: str, compare_u
     )
 
 
-def handle_private_diff(commit_data: dict, sha_of_previous_commit: str, compare_url_template: str) -> CommitMetaData:
-    return CommitMetaData.objects.create(
+async def handle_private_diff(commit_data: dict, *args, **kwargs) -> CommitMetaData:
+    return await sync_to_async(CommitMetaData.objects.create)(
         file_additions_count=len(commit_data[ADDED]),
         file_deletions_count=len(commit_data[REMOVED]),
         file_modifications_count=len(commit_data[MODIFIED])
