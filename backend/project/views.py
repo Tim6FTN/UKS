@@ -27,32 +27,36 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        name = request.data['name']
+        serializer_context = {
+            "owner": request.user
+        }
+        name = request.data.get('name', '')
         if Project.objects.filter(owner=request.user, name=name).exists():
             raise ValidationError(f"Project with name {name} already exists")
-        # Webhook for repository
-        repository_url = request.data.get('repositoryUrl')
-
-        repository = Repository.objects.create(name=name, url=repository_url)
-        description = request.data['description']
-        is_public = request.data.get('isPublic')
-        project = Project.objects.create(name=name, repository=repository, description=description, is_public=is_public,
-                                         owner=request.user)
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data)
+        serializer_data = request.data
+        serializer = self.serializer_class(
+            data=serializer_data, context=serializer_context
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, id=request.data['id'])
+        pk = kwargs.get('pk')
+        project = get_object_or_404(Project, id=pk)
+
         if project.owner != request.user:
             raise PermissionDenied()
-        project.name = request.data['name']
-        project.description = request.data['description']
-        project.save()
-        serializer = ProjectSerializer(project)
+
+        serializer = self.serializer_class(
+            project,
+            data=request.data,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
-        # Returns project where user is owner or user is in collaborators
         if not request.user.is_authenticated:
             raise NotAuthenticated()
         projects = Project.objects.filter(Q(collaborators__id=request.user.id) | Q(owner=request.user))
