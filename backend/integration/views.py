@@ -8,10 +8,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from branch.models import Branch
+from change.models import CloseCommitReference, CommitReference, UPDATE
 from commit.models import Commit, CommitMetaData
 from integration.constants import *
 from integration.webhook_handler import WebhookHandler
 from project.models import Project
+from task.models import Task, CLOSED, OPEN
 
 webhook_handler = WebhookHandler()
 
@@ -39,7 +41,11 @@ def handle_github_push_event(data, *args, **kwargs):
 
     for commit_data in commits_data:
         commit = handle_commit(commit_data, branch, sha_of_previous_commit, compare_url_template, handle_diff_func)
-        print(f'Handled commit {commit.id} | {commit.message}')
+        reference_changes = handle_task_references(commit, project)
+        closing_changes = handle_closing_task_references(commit, project)
+
+        # TODO: Logging?
+
         sha_of_previous_commit = commit_data[COMMIT_ID]
 
 
@@ -128,3 +134,32 @@ def extract_commit_message(commit_message):
         return tokens[0], tokens[1]
     except IndexError:
         return tokens[0], ""
+
+
+def handle_closing_task_references(commit: Commit, project: Project):
+    closing_task_references = re.findall('closes #(.+?)', commit.message)
+    if not closing_task_references:
+        return list()
+
+    tasks_to_close = Task.objects.filter(project=project, id__in=closing_task_references, state__in=[OPEN])
+    if not tasks_to_close:
+        return list()
+
+    created_changes = [CloseCommitReference.objects.create(
+        change_type=UPDATE, description='TODO', task=task, referenced_commit=commit) for task in tasks_to_close]
+    tasks_to_close.update(state=CLOSED)
+
+    return created_changes
+
+
+def handle_task_references(commit: Commit, project: Project):
+    task_references = re.findall('w*(?<!closes )#(.+?)', commit.message)
+    if not task_references:
+        return list()
+
+    referenced_tasks = Task.objects.filter(project=project, id__in=task_references)
+    if not referenced_tasks:
+        return list()
+
+    return [CommitReference.objects.create(
+        change_type=UPDATE, description='TODO', task=task, referenced_commit=commit) for task in referenced_tasks]
