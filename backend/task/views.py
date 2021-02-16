@@ -33,13 +33,37 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-
-
+        pk=kwargs.get('pk')
         serializer_data = request.data
-        serializer = self.serializer_class(
+        serializer_instance = self.queryset.get(id=pk)
 
+        assignees = serializer_data.get('assignees', None)
+        if assignees is not None:
+            print('AssigneeChange create')
+            pass
+
+        priority = serializer_data.get('priority', None)
+        if priority is not None:
+            print('PriorityChange create')
+            pass
+
+        taskStatus = serializer_data.get('status', None)
+        if taskStatus is not None:
+            print('StatusChange create')
+            pass
+        
+        state = serializer_data.get('state', None)
+        if state is not None:
+            print('State create')
+            pass
+        
+        serializer = self.serializer_class(
+            serializer_instance,
+            data=serializer_data,
+            partial=True
         )
         serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
