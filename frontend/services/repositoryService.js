@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 const repositoryUrl = `${process.env.API_URL}/repository`
-const inviteUrl = `${process.env.API_URL}/invite`
+
+//{ headers: { "Authorization": `Token ${localStorage.getItem('token')}` } }
+
 
 const getAll = () =>
   axios.get(`${repositoryUrl}/`)
@@ -16,21 +18,15 @@ const create = repository =>
 const remove = id =>
   axios.delete(`${repositoryUrl}/${id}/`)
 
-const invite = invite =>
-  axios.post(`${inviteUrl}/`, invite)
 
-const addStar = id =>
-  axios.get(`${repositoryUrl}/${id}/star`)
 
-const getTopFive = () =>
-  axios.get(`${repositoryUrl}/getTopFive/`)
+
+
 
 const update = (id, repository) => {
   axios.put(`${repositoryUrl}/${id}/`, repository)
 }
 
-const search = (searchValue) =>
-  axios.get(`${repositoryUrl}/search/`, { params: { value: searchValue } })
 
 
 const RepositoryService = {
@@ -39,10 +35,6 @@ const RepositoryService = {
   create,
   remove,
   update,
-  invite,
-  addStar,
-  getTopFive,
-  search
 }
 
 

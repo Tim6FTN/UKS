@@ -5,6 +5,7 @@ from repository.models import Repository
 
 
 class Project(models.Model):
+    # TODO: Add unique True
     name = models.CharField(max_length=100)
     description = models.TextField(default='', blank=True)
     is_public = models.BooleanField(default=True)
@@ -13,6 +14,9 @@ class Project(models.Model):
     owner = models.ForeignKey(to=User, null=False, on_delete=models.CASCADE, related_name='owner')
     stars = models.ManyToManyField(to=User, blank=True, related_name='stars')
     collaborators = models.ManyToManyField(to=User, blank=True, related_name='collaborators')
+
+    class Meta:
+        unique_together = ['name', 'owner']
 
     def __str__(self):
         return self.name

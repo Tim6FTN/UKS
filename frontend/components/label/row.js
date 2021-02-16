@@ -1,9 +1,11 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
 import LabelForm from "./form";
 
 const LabelRow = ({ label, tryDelete, onUpdate }) => {
 
   const [visible, setVisible] = useState(false)
+  const router = useRouter()
 
   const update = (label) => {
     onUpdate(label);
@@ -14,7 +16,7 @@ const LabelRow = ({ label, tryDelete, onUpdate }) => {
       <tr>
         <td><span className="p-2 rounded" style={{ backgroundColor: label.color, color: getColor(label.color) }}>{label.name}</span></td>
         <td><button className="btn btn-secondary" onClick={() => setVisible(!visible)}>Edit</button></td>
-        <td><button className="btn btn-danger" onClick={() => tryDelete(label.id)}>Delete</button></td>
+        <td><button className="btn btn-danger" onClick={() => tryDelete(router.query.id, label.id)}>Delete</button></td>
       </tr>
       {visible &&
         <tr>

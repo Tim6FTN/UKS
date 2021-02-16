@@ -1,32 +1,55 @@
 import axios from "axios";
 
-const url = `${process.env.API_URL}/project`
+const projectUrl = `${process.env.API_URL}/project`;
 
-
-const getAll = () => axios.get(`${url}/`);
+const getAll = () =>
+  axios.get(`${projectUrl}/`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
 
 const getById = async (projectId) => {
-  try {
-    const projectResponse = await axios.get(
-      `${url}/${projectId}/`
-    );
-    return projectResponse.data;
-  } catch (error) {
-    alert(error);
-    return undefined;
+  const token = localStorage.getItem("token");
+  if (token) {
+    return axios.get(`${projectUrl}/${projectId}/`, {
+      headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+    });
+  } else {
+    return axios.get(`${projectUrl}/${projectId}/`);
   }
 };
 
 const create = (project) =>
   axios
-    .post(`${url}/`, project)
+    .post(`${projectUrl}/`, project, {
+      headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+    })
     .catch((error) => alert(error));
 
 const remove = (projectId) =>
-  axios.delete(`${url}/${projectId}/`);
+  axios.delete(`${projectUrl}/${projectId}/`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
 
-const update = (project) =>
-  axios.put(`${url}/${project.id}/`, project);
+const update = (projectId, project) =>
+  axios.put(`${projectUrl}/${projectId}/`, project, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
+
+const addStar = (id) =>
+  axios.get(`${projectUrl}/${id}/star`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
+
+const removeStar = (id) => {
+  return axios.get(`${projectUrl}/${id}/removeStar`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
+};
+
+const getTopFive = () => axios.get(`${projectUrl}/getTopFive/`);
+
+const search = (searchValue) =>
+  axios.get(`${projectUrl}/search/`, { params: { value: searchValue } });
 
 const ProjectService = {
   getAll,
@@ -34,6 +57,10 @@ const ProjectService = {
   create,
   remove,
   update,
+  addStar,
+  removeStar,
+  getTopFive,
+  search,
 };
 
 export default ProjectService;
