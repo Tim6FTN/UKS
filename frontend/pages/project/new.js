@@ -9,9 +9,9 @@ import ProjectService from "../../services/projectService";
 const NewRepository = () => {
   const emptyProject = {
     name: "",
-    repositoryUrl: "",
+    repository_url: "",
     description: "",
-    isPublic: true,
+    is_public: true,
   };
 
   const router = useRouter();
@@ -52,8 +52,8 @@ const NewRepository = () => {
           <input
             type="text"
             className="form-control"
-            value={project.repositoryUrl}
-            onChange={handleChange("repositoryUrl")}
+            value={project.repository_url}
+            onChange={handleChange("repository_url")}
             required
           />
         </div>
@@ -71,9 +71,9 @@ const NewRepository = () => {
           <input
             className="form-check-input"
             type="checkbox"
-            checked={project.isPublic}
+            checked={project.is_public}
             onChange={(event) =>
-              setProject({ ...project, isPublic: event.target.checked })
+              setProject({ ...project, is_public: event.target.checked })
             }
           />
           <label className="form-check-label">Is public?</label>

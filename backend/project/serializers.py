@@ -18,6 +18,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     repository_url = serializers.CharField(write_only=True)
     repository = serializers.PrimaryKeyRelatedField(read_only=True)
     is_public = serializers.BooleanField(default=True)
+    wiki_content = serializers.CharField(default='', allow_blank=True)
 
     class Meta:
         model = Project
