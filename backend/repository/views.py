@@ -1,14 +1,10 @@
 from django.contrib.auth.models import User
-from django.db.models import Count
 from rest_framework import viewsets
-from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-
-from project.models import Invite
 from repository.models import Repository
-from repository.serializers import RepositorySerializer, InviteSerializer
+from repository.serializers import RepositorySerializer
 
 
 class RepositoryViewSet(viewsets.ModelViewSet):
@@ -44,43 +40,3 @@ class RepositoryViewSet(viewsets.ModelViewSet):
         queryset = Repository.objects.all()
         serializer = RepositorySerializer(queryset, many=True)
         return Response(serializer.data)
-
-    @action(detail=True)
-    def star(self, *args, **kwargs):
-        # Change to authenticated user
-        user = User.objects.all().first()
-        repository = get_object_or_404(Repository, id=kwargs.get('pk'))
-        repository.stars.add(user)
-        return Response()
-
-    @action(detail=False)
-    def search(self, *args, **kwargs):
-        search_param = self.request.query_params.get("value")
-        repositories = Repository.objects.filter(name__contains=search_param, isPublic=True).annotate(star_count=Count('stars')).order_by('-star_count')
-        serializer = RepositorySerializer(repositories, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False)
-    def getTopFive(self, *args, **kwargs):
-        repositories = Repository.objects.filter(isPublic=True).annotate(star_count=Count('stars')).order_by('-star_count')[:5]
-        serializer = RepositorySerializer(repositories, many=True)
-        return Response(serializer.data)
-
-
-class InviteViewSet(viewsets.ModelViewSet):
-    queryset = Invite.objects.all()
-    serializer_class = InviteSerializer
-
-    def create(self, request, *args, **kwargs):
-        user = get_object_or_404(User, username=request.data.get('username'))
-        repository = get_object_or_404(Repository, id=request.data.get('repositoryId'))
-        # Check if user is owner of repository else return bad request
-        invite = Invite.objects.create(user=user, repository=repository)
-        serializer = InviteSerializer(invite)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        invite = get_object_or_404(Invite, pk=kwargs.get('pk'))
-        invite.repository.users.add(invite.user)
-        invite.delete()
-        return Response()

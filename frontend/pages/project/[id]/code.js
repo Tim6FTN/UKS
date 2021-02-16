@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import CommitList from "../../../components/commit/list";
 import { useRouter } from "next/router";
 import CodeService from "../../../services/codeService";
+import withAuth from "../../../components/util/withAuth";
+import ProjectWrapper from "../../../components/project/wrapper";
 
 const Code = () => {
   const [branches, setBranches] = useState([]);
@@ -53,9 +55,8 @@ const Code = () => {
   }, [router.query.id]);
 
   return (
-    <div>
-      <Navbar />
-      <Container>
+    <>
+      <ProjectWrapper>
         <BranchList
           branches={branches}
           active={active}
@@ -64,8 +65,8 @@ const Code = () => {
         />
 
         <CommitList commits={commits} handleAdd={addCommit} />
-      </Container>
-    </div>
+      </ProjectWrapper>
+    </>
   );
 };
 

@@ -12,7 +12,7 @@ class LabelAdmin(admin.ModelAdmin):
     form = LabelForm
     fieldsets = (
         (None, {
-            'fields': ('name', 'color')
+            'fields': ('project', 'name', 'color')
         }),
     )
 
