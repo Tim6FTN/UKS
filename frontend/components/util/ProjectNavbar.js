@@ -1,6 +1,7 @@
 import { faEdit, faStar, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const ProjectNavbar = ({
@@ -12,6 +13,7 @@ const ProjectNavbar = ({
   route,
 }) => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const router = useRouter();
   useEffect(() => {
     setLoggedIn(localStorage.getItem("token"));
   }, []);
@@ -43,13 +45,12 @@ const ProjectNavbar = ({
         <div className="col text-right h2">
           {loggedIn && (
             <>
-              <Link href={`/project/${project.id}/edit`}>
-                <FontAwesomeIcon
-                  icon={faEdit}
-                  className="mr-4"
-                  style={{ cursor: "pointer" }}
-                />
-              </Link>
+              <FontAwesomeIcon
+                icon={faEdit}
+                onClick={() => router.push(`/project/${project.id}/edit`)}
+                className="mr-4"
+                style={{ cursor: "pointer" }}
+              />
               <FontAwesomeIcon
                 onClick={tryDelete}
                 icon={faTrashAlt}
@@ -63,46 +64,52 @@ const ProjectNavbar = ({
       </div>
       <div className="row nav-tabs mb-2">
         <div
-          className={`nav-item nav-link ${route == "/project/[id]" ? "active" : ""
-            }`}
+          className={`nav-item nav-link ${
+            route == "/project/[id]" ? "active" : ""
+          }`}
         >
           <Link href={`/project/${project.id}`}>
             <a style={{ textDecorationLine: "none" }}> Readme </a>
           </Link>
         </div>
         <div
-          className={`nav-item nav-link ${route == "/project/[id]/code" ? "active" : ""
-            }`}
+          className={`nav-item nav-link ${
+            route == "/project/[id]/code" ? "active" : ""
+          }`}
         >
           <Link href={`/project/${project.id}/code`}>
             <a style={{ textDecorationLine: "none" }}> Code </a>
           </Link>
         </div>
         <div
-          className={`nav-item nav-link ${route == "/project/[id]/tasks" ? "active" : ""
-            }`}
+          className={`nav-item nav-link ${
+            route == "/project/[id]/tasks" ? "active" : ""
+          }`}
         >
           {" "}
           <a style={{ textDecorationLine: "none" }}> Tasks </a>
         </div>
         <div
-          className={`nav-item nav-link ${route == "/project/[id]/kanban" ? "active" : ""
-            }`}
+          className={`nav-item nav-link ${
+            route == "/project/[id]/kanban" ? "active" : ""
+          }`}
         >
           {" "}
           <a style={{ textDecorationLine: "none" }}> Kanban </a>
         </div>
         <div
-          className={`nav-item nav-link ${route == "/project/[id]/wiki" ? "active" : ""
-            }`}
+          className={`nav-item nav-link ${
+            route == "/project/[id]/wiki" ? "active" : ""
+          }`}
         >
           {" "}
           <a style={{ textDecorationLine: "none" }}> Wiki </a>
         </div>
         {loggedIn && (
           <div
-            className={`nav-item nav-link ${route == "/project/[id]/invite" ? "active" : ""
-              }`}
+            className={`nav-item nav-link ${
+              route == "/project/[id]/invite" ? "active" : ""
+            }`}
           >
             {" "}
             <Link href={`/project/${project.id}/invite`}>
@@ -112,8 +119,9 @@ const ProjectNavbar = ({
         )}
         {loggedIn && (
           <div
-            className={`nav-item nav-link ${route == "/project/[id]/label" ? "active" : ""
-              }`}
+            className={`nav-item nav-link ${
+              route == "/project/[id]/label" ? "active" : ""
+            }`}
           >
             {" "}
             <Link href={`/project/${project.id}/label`}>

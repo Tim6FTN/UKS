@@ -1,47 +1,24 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import ReactMarkdown from "react-markdown";
 import ProjectWrapper from "../../../components/project/wrapper";
 import Container from "../../../components/util/container";
 import Navbar from "../../../components/util/navbar";
-import ProjectService from "../../../services/projectService";
+import { ProjectContext } from "../../../contexts/projectContext";
 
 const Project = () => {
   const router = useRouter();
-  const emptyProject = {
-    name: "",
-    owner: {
-      id: "",
-      username: "",
-    },
-    description: "",
-    repository: "",
-    stars: [],
-  };
-  const [project, setProject] = useState(emptyProject);
-  useEffect(async () => {
-    if (router.query.id) {
-      try {
-        const projectResponse = await ProjectService.getById(router.query.id);
-        if (projectResponse.data) {
-          setProject(projectResponse.data);
-        }
-      } catch (error) {
-        if (error.response.status === 403) {
-          router.push("/");
-        }
-      }
-    }
-  }, [router.query.id]);
+  const { project, unauthorized } = useContext(ProjectContext);
+
+  if (unauthorized) {
+    router.push("/");
+  }
 
   return (
     <>
-      <Navbar />
-      <Container>
-        <ProjectWrapper>
-          <ReactMarkdown>{project.description}</ReactMarkdown>
-        </ProjectWrapper>
-      </Container>
+      <ProjectWrapper>
+        <ReactMarkdown>{project?.description}</ReactMarkdown>
+      </ProjectWrapper>
     </>
   );
 };

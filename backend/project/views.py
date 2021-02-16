@@ -65,6 +65,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project.stars.add(request.user)
         return Response()
 
+    @action(detail=True)
+    def removeStar(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, id=kwargs.get('pk'))
+        project.stars.remove(request.user)
+        return Response()
+
     @action(detail=False, permission_classes=[AllowAny])
     def getTopFive(self, *args, **kwargs):
         projects = Project.objects.filter(is_public=True).annotate(star_count=Count('stars')).order_by('-star_count')[
@@ -88,6 +94,10 @@ class InviteViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         user = get_object_or_404(User, username=request.data.get('username'))
+
+        if user == request.user:
+            raise ValidationError("You cannot invite yourself")
+
         project = get_object_or_404(Project, id=request.data.get('projectId'))
         if project.owner.id != request.user.id:
             raise ValidationError("You are not owner of the project")

@@ -13,7 +13,7 @@ const Register = () => {
     github_username: "",
   });
 
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null);
 
   const router = useRouter();
 
@@ -23,11 +23,11 @@ const Register = () => {
 
   useEffect(() => {
     if (registerInfo.password1 !== registerInfo.password2) {
-      setError('Passwords must match')
+      setError("Passwords must match");
     } else {
-      setError(null)
+      setError(null);
     }
-  }, [registerInfo])
+  }, [registerInfo]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -39,78 +39,75 @@ const Register = () => {
   };
   return (
     <>
-      <Navbar />
-      <Container>
-        <form
-          onSubmit={handleSubmit}
-          style={{ maxWidth: 400 }}
-          className=" mx-auto px-5 py-4"
-        >
-          <h2 className="form-group text-center">REGISTER</h2>
+      <form
+        onSubmit={handleSubmit}
+        style={{ maxWidth: 400 }}
+        className=" mx-auto px-5 py-4"
+      >
+        <h2 className="form-group text-center">REGISTER</h2>
 
-          <div className="form-group">
-            <input
-              className="form-control"
-              value={registerInfo.username}
-              onChange={onChange("username")}
-              placeholder="Username"
-              required
-            ></input>
-          </div>
+        <div className="form-group">
+          <input
+            className="form-control"
+            value={registerInfo.username}
+            onChange={onChange("username")}
+            placeholder="Username"
+            required
+          ></input>
+        </div>
 
-          <div className="form-group">
-            <input
-              type="email"
-              className="form-control"
-              value={registerInfo.email}
-              onChange={onChange("email")}
-              placeholder="Email"
-              required
-            ></input>
-          </div>
+        <div className="form-group">
+          <input
+            type="email"
+            className="form-control"
+            value={registerInfo.email}
+            onChange={onChange("email")}
+            placeholder="Email"
+            required
+          ></input>
+        </div>
 
-          <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              value={registerInfo.password1}
-              onChange={onChange("password1")}
-              placeholder="Password"
-            ></input>
-            {error && <small className='text-danger'>{error}</small>}
-          </div>
+        <div className="form-group">
+          <input
+            type="password"
+            className="form-control"
+            value={registerInfo.password1}
+            onChange={onChange("password1")}
+            placeholder="Password"
+          ></input>
+          {error && <small className="text-danger">{error}</small>}
+        </div>
 
-          <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              value={registerInfo.password2}
-              onChange={onChange("password2")}
-              placeholder="Confirm password"
-            ></input>
-            {error && <small className='text-danger'>{error}</small>}
-          </div>
+        <div className="form-group">
+          <input
+            type="password"
+            className="form-control"
+            value={registerInfo.password2}
+            onChange={onChange("password2")}
+            placeholder="Confirm password"
+          ></input>
+          {error && <small className="text-danger">{error}</small>}
+        </div>
 
-          <div className="form-group">
-            <input
-              className="form-control"
-              value={registerInfo.github_username}
-              onChange={onChange("github_username")}
-              placeholder="Github username"
-              required
-            ></input>
-          </div>
+        <div className="form-group">
+          <input
+            className="form-control"
+            value={registerInfo.github_username}
+            onChange={onChange("github_username")}
+            placeholder="Github username"
+            required
+          ></input>
+        </div>
 
-          <div className="form-gropup">
-            <input
-              disabled={error}
-              type="submit"
-              className="btn btn-success w-100"
-              value="Register"
-            />
-          </div>
-        </form>
-      </Container>
+        <div className="form-gropup">
+          <input
+            disabled={error}
+            type="submit"
+            className="btn btn-success w-100"
+            value="Register"
+          />
+        </div>
+      </form>
     </>
   );
 };

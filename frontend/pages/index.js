@@ -23,9 +23,6 @@ const Home = () => {
   }
   return (
     <div>
-      <Navbar />
-
-      <Container>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <input type="search" className="form-control" value={searchValue} onChange={(event) => setSearchValue(event.target.value)} placeholder="Search..." />
@@ -34,7 +31,6 @@ const Home = () => {
         <div className="card-deck">
           {repositoryCards()}
         </div>
-      </Container>
     </div>
   )
 }

@@ -55,10 +55,8 @@ const Code = () => {
   }, [router.query.id]);
 
   return (
-    <div>
-      <Navbar />
-      <Container>
-        <ProjectWrapper>
+    <>
+      <ProjectWrapper>
         <BranchList
           branches={branches}
           active={active}
@@ -67,10 +65,8 @@ const Code = () => {
         />
 
         <CommitList commits={commits} handleAdd={addCommit} />
-        </ProjectWrapper>
-        
-      </Container>
-    </div>
+      </ProjectWrapper>
+    </>
   );
 };
 

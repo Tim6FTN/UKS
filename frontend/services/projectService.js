@@ -40,6 +40,12 @@ const addStar = (id) =>
     headers: { Authorization: `Token ${localStorage.getItem("token")}` },
   });
 
+const removeStar = (id) => {
+  return axios.get(`${projectUrl}/${id}/removeStar`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
+};
+
 const getTopFive = () => axios.get(`${projectUrl}/getTopFive/`);
 
 const search = (searchValue) =>
@@ -52,6 +58,7 @@ const ProjectService = {
   remove,
   update,
   addStar,
+  removeStar,
   getTopFive,
   search,
 };

@@ -33,9 +33,7 @@ const Login = () => {
   };
 
   return (
-    <>
-      <Navbar />
-      <Container>
+    <>      
         <form
           onSubmit={handleSubmit}
           style={{ maxWidth: 400 }}
@@ -70,7 +68,6 @@ const Login = () => {
           </div>
           <small className="text-danger">{errorMessage}</small>
         </form>
-      </Container>
     </>
   );
 };

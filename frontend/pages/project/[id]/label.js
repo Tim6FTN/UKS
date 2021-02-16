@@ -57,33 +57,28 @@ const Label = () => {
 
   const newLabel = () => {
     setLabel(emptyLabel);
-    setLabelFormHidden(oldState => !oldState);
+    setLabelFormHidden((oldState) => !oldState);
   };
   return (
     <>
-      <Navbar />
-      <Container>
-        <ProjectWrapper>
-          <div>
-            <button className="btn btn-success my-3" onClick={() => newLabel()}>
-              {labelFormHidden ? 'New label' : 'Hide'}
-            </button>
-            {!labelFormHidden && (
-              <LabelForm onCreate={onCreate} label={label} />
-            )}
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Edit</th>
-                  <th scope="col">Delete</th>
-                </tr>
-              </thead>
-              <tbody>{labelRows()}</tbody>
-            </table>
-          </div>
-        </ProjectWrapper>
-      </Container>
+      <ProjectWrapper>
+        <div>
+          <button className="btn btn-success my-3" onClick={() => newLabel()}>
+            {labelFormHidden ? "New label" : "Hide"}
+          </button>
+          {!labelFormHidden && <LabelForm onCreate={onCreate} label={label} />}
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <tbody>{labelRows()}</tbody>
+          </table>
+        </div>
+      </ProjectWrapper>
     </>
   );
 };

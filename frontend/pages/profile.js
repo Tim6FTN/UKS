@@ -28,17 +28,19 @@ const Profile = () => {
 
   return (
     <>
-      <Navbar />
-      <Container>
-        {invites.map((invite) => (
-          <InviteCard
-            key={invite.id}
-            invite={invite}
-            accept={accept}
-            decline={decline}
-          />
-        ))}
-      </Container>
+      <h2 className="text-center">My profile</h2>
+      <h2 className="text-center">
+        {invites.length ? "Pending invites:" : "No pending invites"}
+      </h2>
+
+      {invites.map((invite) => (
+        <InviteCard
+          key={invite.id}
+          invite={invite}
+          accept={accept}
+          decline={decline}
+        />
+      ))}
     </>
   );
 };

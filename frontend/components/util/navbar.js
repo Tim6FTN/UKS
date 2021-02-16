@@ -4,21 +4,14 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/userContext";
 const Navbar = () => {
   const router = useRouter();
-  const [tokenExsists, setTokenExists] = useState(true);
-
   const { user, resetUser } = useContext(UserContext);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setTokenExists(Boolean(token));
-  }, []);
 
   const logout = (event) => {
     event.preventDefault();
     localStorage.removeItem("token");
     resetUser();
     setTokenExists(false);
-    window.location.reload();
+    router.push("/");
   };
 
   return (

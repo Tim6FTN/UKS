@@ -37,23 +37,20 @@ const Projects = () => {
     ));
   return (
     <>
-      <Navbar />
-      <Container>
-        <div className="row border-dark border-bottom">
-          <div className="col text-left">
-            <h2>PROJECTS</h2>
-          </div>
-          <div className="col text-right">
-            <Link href="/project/new">
-              <button className="btn btn-success">New project</button>
-            </Link>
-          </div>
+      <div className="row border-dark border-bottom">
+        <div className="col text-left">
+          <h2>PROJECTS</h2>
         </div>
+        <div className="col text-right">
+          <Link href="/project/new">
+            <button className="btn btn-success">New project</button>
+          </Link>
+        </div>
+      </div>
 
-        <table>
-          <tbody>{links()}</tbody>
-        </table>
-      </Container>
+      <table>
+        <tbody>{links()}</tbody>
+      </table>
     </>
   );
 };
