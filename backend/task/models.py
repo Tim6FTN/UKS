@@ -23,10 +23,10 @@ STATES = [
     (CLOSED, "Closed")
 ]
 
-BACKLOG = ""
-TODO = ""
-IN_PROGRESS = ""
-DONE = ""
+BACKLOG = "Backlog"
+TODO = "ToDo"
+IN_PROGRESS = "InProgress"
+DONE = "Done"
 TASK_STATUSES = [
     (BACKLOG, "Backlog"),
     (TODO, "ToDo"),
