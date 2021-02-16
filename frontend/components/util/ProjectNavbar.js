@@ -2,7 +2,8 @@ import { faEdit, faStar, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../contexts/userContext";
 
 const ProjectNavbar = ({
   project,
@@ -12,11 +13,9 @@ const ProjectNavbar = ({
   loading,
   route,
 }) => {
-  const [loggedIn, setLoggedIn] = useState(false);
   const router = useRouter();
-  useEffect(() => {
-    setLoggedIn(localStorage.getItem("token"));
-  }, []);
+  const { user } = useContext(UserContext);
+
   return (
     <>
       <div className="row border-dark border-bottom mb-2">
@@ -43,7 +42,7 @@ const ProjectNavbar = ({
         </div>
 
         <div className="col text-right h2">
-          {loggedIn && (
+          {user && user.id == project.owner.id && (
             <>
               <FontAwesomeIcon
                 icon={faEdit}
@@ -105,7 +104,7 @@ const ProjectNavbar = ({
           {" "}
           <a style={{ textDecorationLine: "none" }}> Wiki </a>
         </div>
-        {loggedIn && (
+        {user && user.id == project.owner.id && (
           <div
             className={`nav-item nav-link ${
               route == "/project/[id]/invite" ? "active" : ""
@@ -117,7 +116,7 @@ const ProjectNavbar = ({
             </Link>
           </div>
         )}
-        {loggedIn && (
+        {user && (
           <div
             className={`nav-item nav-link ${
               route == "/project/[id]/label" ? "active" : ""

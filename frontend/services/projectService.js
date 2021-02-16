@@ -19,11 +19,9 @@ const getById = async (projectId) => {
 };
 
 const create = (project) =>
-  axios
-    .post(`${projectUrl}/`, project, {
-      headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-    })
-    .catch((error) => alert(error));
+  axios.post(`${projectUrl}/`, project, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
 
 const remove = (projectId) =>
   axios.delete(`${projectUrl}/${projectId}/`, {

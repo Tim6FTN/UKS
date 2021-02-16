@@ -10,7 +10,6 @@ const Navbar = () => {
     event.preventDefault();
     localStorage.removeItem("token");
     resetUser();
-    setTokenExists(false);
     router.push("/");
   };
 
