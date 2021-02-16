@@ -21,8 +21,10 @@ class ProjectTests(APITestCase):
         user = User.objects.create_user(username="user", password="user")
         repository1 = Repository.objects.create(url='https://github.com/Tim6FTN/UKS', name='UKS')
         repository2 = Repository.objects.create(url='https://github.com/Tim6FTN/UKS', name='UKS')
+        repository3 = Repository.objects.create(url='https://github.com/Tim6FTN/UKS', name='UKS')
 
-        project1 = Project.objects.create(name="Project1", repository=repository1, owner=admin)
+        project1 = Project.objects.create(name="Project1", repository=repository1, owner=admin, is_public=False)
+        project11 = Project.objects.create(name="Project11", repository=repository3, owner=admin)
         project2 = Project.objects.create(name="Project2", repository=repository2, owner=user)
         project2.collaborators.add(admin)
 
@@ -35,13 +37,32 @@ class ProjectTests(APITestCase):
         self.client.login(username="admin", password="admin")
         response = self.client.get(url_list)
 
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0].get('name'), 'Project1')
-        self.assertEqual(response.data[1].get('name'), 'Project2')
+        self.assertEqual(len(response.data), 3)
+        self.assertEqual('Project1', response.data[0].get('name'))
+        self.assertEqual('Project11', response.data[1].get('name'))
+        self.assertEqual('Project2', response.data[2].get('name'))
+
+    def test_get_by_id_unauthenticated_public(self):
+        response = self.client.get(url_detail(1))
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_get_by_id_unauthenticated_private(self):
+        response = self.client.get(url_detail(1))
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_get_by_id_owner(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(url_detail(1))
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_get_by_id_collaborator(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(url_detail(3))
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_create_project_unauthenticated(self):
         response = self.client.post(url_list, data={})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
     def test_create_project_already_exists(self):
         self.client.login(username="admin", password="admin")
@@ -83,20 +104,49 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.data.get('owner').get('username'), "user")
         self.assertEqual(response.data.get('description'), "DESCRIPTION MARKDOWN")
         self.assertEqual(response.data.get('stars'), [])
-        self.assertEqual(response.data.get('is_public'), False)
+        self.assertEqual(False, response.data.get('is_public'))
 
     def test_update_project_empty_fields(self):
         self.client.login(username="admin", password="admin")
         response = self.client.put(url_detail(1), data={})
-        self.assertEqual(response.data.get('name')[0], 'This field is required.')
-        self.assertEqual(response.data.get('repository_url')[0], 'This field is required.')
+        print(response.data)
+        self.assertEqual('This field is required.', response.data.get('name')[0])
 
     def test_update_not_owner(self):
-        pass
+        self.client.login(username="admin", password="admin")
+        data = {'name': 'Project11', 'repository_url': 'https://github.com/Tim6FTN/UKS',
+                'description': 'DESCRIPTION MARKDOWN', 'is_public': 'false', 'wiki_content': 'wiki'}
+        response = self.client.put(url_detail(3), data=data)
+        self.assertEqual('You do not have permission to perform this action.', str(response.data.get('detail')))
+        print(response.data)
+
+    def test_update_unique_name(self):
+        self.client.login(username="admin", password="admin")
+        data = {'name': 'Project11', 'repository_url': 'https://github.com/Tim6FTN/UKS',
+                'description': 'DESCRIPTION MARKDOWN', 'is_public': 'false', 'wiki_content': 'wiki'}
+        response = self.client.put(url_detail(1), data=data)
+        self.assertEqual('Project with name Project11 already exists', response.data[0])
 
     def test_update_successful(self):
         self.client.login(username="admin", password="admin")
-        data = {'name': 'Project1', 'repository_url': 'https://github.com/Tim6FTN/UKS',
+        data = {'name': 'Project123',
                 'description': 'DESCRIPTION MARKDOWN', 'is_public': 'false', 'wiki_content': 'wiki'}
         response = self.client.put(url_detail(1), data=data)
-        print(response.data)
+        self.assertEqual('Project123', response.data.get('name'))
+        self.assertEqual('DESCRIPTION MARKDOWN', response.data.get('description'))
+        self.assertEqual(False, response.data.get('is_public'))
+        self.assertEqual('wiki', response.data.get('wiki_content'))
+
+    def test_delete_unauthorized(self):
+        response = self.client.delete(url_detail(1))
+        self.assertEqual('Authentication credentials were not provided.', response.data.get('detail'))
+
+    def test_delete_not_owner(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.delete(url_detail(3))
+        self.assertEqual('You do not have permission to perform this action.', response.data.get('detail'))
+
+    def test_delete_successful(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.delete(url_detail(1))
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)

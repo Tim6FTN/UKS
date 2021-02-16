@@ -24,6 +24,13 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'owner', 'description', 'repository', 'repository_url', 'stars', 'collaborators',
                   'is_public', 'wiki_content']
 
+    def get_fields(self, *args, **kwargs):
+        fields = super(ProjectSerializer, self).get_fields()
+        method = self.context.get('method', None)
+        if method == "PUT":
+            fields['repository_url'].required = False
+        return fields
+
     def create(self, validated_data):
         repository = Repository.objects.create(name='name123', url=validated_data.pop('repository_url'))
         owner = self.context.get('owner', None)

@@ -42,15 +42,24 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
+        serializer_context = {
+            "owner": request.user,
+            "method": request.method
+        }
         pk = kwargs.get('pk')
         project = get_object_or_404(Project, id=pk)
 
         if project.owner != request.user:
             raise PermissionDenied()
 
+        name = request.data.get('name', '')
+        if project.name != name and Project.objects.filter(owner=request.user, name=name):
+            raise ValidationError(f"Project with name {name} already exists")
+
         serializer = self.serializer_class(
             project,
             data=request.data,
+            context=serializer_context,
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -62,6 +71,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
         projects = Project.objects.filter(Q(collaborators__id=request.user.id) | Q(owner=request.user))
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, id=kwargs.get('pk'))
+        if project.owner != request.user:
+            raise PermissionDenied()
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True)
     def star(self, request, *args, **kwargs):
