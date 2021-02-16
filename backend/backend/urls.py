@@ -43,5 +43,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth', include('rest_framework.urls')),
     path('api/api-token-auth/', obtain_auth_token, name='api_token_auth'),
-    path('notify', receive_webhook_request)
+    path('notify', receive_webhook_request, name='notify')
 ]
