@@ -47,6 +47,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             raise PermissionDenied()
         project.name = request.data['name']
         project.description = request.data['description']
+        project.wiki_content = request.data['wiki_content'] if not None else project.wiki_content
         project.save()
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
