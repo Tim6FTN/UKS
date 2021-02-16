@@ -22,7 +22,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'name', 'owner', 'description', 'repository', 'repository_url', 'stars', 'collaborators',
-                  'is_public']
+                  'is_public', 'wiki_content']
 
     def create(self, validated_data):
         repository = Repository.objects.create(name='name123', url=validated_data.pop('repository_url'))

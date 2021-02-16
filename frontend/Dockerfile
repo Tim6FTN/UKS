@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app
 COPY package-lock.json /usr/src/app
 
-RUN npm install --production
+RUN npm install --production --legacy-peer-deps
 
 COPY . /usr/src/app
 
