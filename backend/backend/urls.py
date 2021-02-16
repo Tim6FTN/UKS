@@ -39,7 +39,7 @@ projects_router.register(r'label', LabelViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    path('api/', include(projects_router.urls)),
+    path('api/', include(projects_router.urls), name='project'),
     path('admin/', admin.site.urls),
     path('api-auth', include('rest_framework.urls')),
     path('api/api-token-auth/', obtain_auth_token, name='api_token_auth'),
