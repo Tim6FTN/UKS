@@ -16,6 +16,7 @@ from commit.models import Commit, CommitMetaData
 from integration.constants import *
 from integration.webhook_handler import WebhookHandler, GITHUB_EVENT_DESCRIPTION
 from project.models import Project
+from repository.models import Repository
 from task.models import Task, CLOSED, OPEN
 
 webhook_handler = WebhookHandler()
@@ -26,6 +27,25 @@ webhook_handler = WebhookHandler()
 def receive_webhook_request(request):
     webhook_handler.handle(request)
     return HttpResponse("", status=204)
+
+
+@webhook_handler.hook(event_type="create")
+def handle_github_branch_created_event(data, *args, **kwargs):
+    if data['ref_type'] == 'branch':
+        repository_url = data['repository']['html_url']
+        repository = Repository.objects.filter(url=repository_url).first()
+        if repository:
+            branch_name = data['ref']
+            Branch.objects.create(repository=repository, name=branch_name)
+
+
+@webhook_handler.hook(event_type="delete")
+def handle_github_branch_deleted_event(data, *args, **kwargs):
+    if data['ref_type'] == 'branch':
+        repository_url = data['repository']['html_url']
+        branch_to_delete = Branch.objects.filter(repository__url=repository_url, name=data['ref']).first()
+        if branch_to_delete:
+            branch_to_delete.delete()
 
 
 @webhook_handler.hook(event_type="push")

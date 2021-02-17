@@ -29,7 +29,6 @@ class RepositoryImporter:
         self.__owner = str()
         self.__repository_name = str()
         self.__raw_repository_data = dict()
-        self.__processed_repository_data = dict()
 
     def check_if_repository_exists(self):
         repository_response = requests.get(self.__repository_url)
@@ -90,9 +89,7 @@ class RepositoryImporter:
 
     def __process_main_branch_commits(self, repository: Repository):
         main_branch = Branch.objects.filter(repository_id=repository.id, name='main').first()
-        # compare_url_template = self.__raw_repository_data[COMPARE_URL]
         handle_commit_func = RepositoryImporter.handle_public_commit if self.__is_repository_public else RepositoryImporter.handle_private_commit
-
         for commit_data in self.__raw_commits_data:
 
             # Adding missing values because payloads are different
@@ -101,11 +98,8 @@ class RepositoryImporter:
             commit_data['timestamp'] = commit_data['commit']['committer']['date']
             commit_data['author']['name'] = commit_data['author']['login']
             commit_data['author']['email'] = "unknown"
-            # commit_data['added'] = []
-            # commit_data['removed'] = []
-            # commit_data['modified'] = []
 
-            commit_full_data_url = f'https://api.github.com/repos/{self.__owner}/{self.__repository_name}/commits/{commit_data["sha"]}'
+            commit_full_data_url = f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}{SLASH}commits{SLASH}{commit_data["sha"]}'
 
             handle_commit(
                 commit_data=commit_data,
@@ -129,13 +123,17 @@ class RepositoryImporter:
 
         added_files_count, deleted_files_count, modified_files_count = 0, 0, 0
         added_lines_count, deleted_lines_count, modified_lines_count = diff_data['stats']['additions'], diff_data['stats']['deletions'], diff_data['stats']['total']
-        for file in diff_files:
-            if file['status'] == 'added':
-                added_files_count += 1
-            elif file['status'] == 'deleted':
-                deleted_files_count += 1
-            else:
-                modified_lines_count += 1
+
+        try:
+            for file in diff_files:
+                if file['status'] == 'added':
+                    added_files_count += 1
+                elif file['status'] == 'deleted':
+                    deleted_files_count += 1
+                else:
+                    modified_lines_count += 1
+        except KeyError:
+            pass
 
         return await sync_to_async(CommitMetaData.objects.create)(
             file_additions_count=added_files_count,
@@ -154,7 +152,6 @@ class RepositoryImporter:
             file_modifications_count=len(commit_data[MODIFIED])
         )
 
-    # TODO: Make async?
     def import_repository(self) -> Repository:
         self.__get_repository_data()
         self.__parse_repository_data()

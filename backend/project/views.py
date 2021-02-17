@@ -42,7 +42,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         repository_url = request.data.get('repositoryUrl')
 
-        # TODO: make view async and methods async as well
         repository_importer = RepositoryImporter(repository_url=repository_url)
         repository_importer.check_if_repository_exists()
         repository = repository_importer.import_repository()
