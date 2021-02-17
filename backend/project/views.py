@@ -111,6 +111,7 @@ class InviteViewSet(viewsets.ModelViewSet):
     queryset = Invite.objects.all()
     serializer_class = InviteSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'delete']
 
     def create(self, request, *args, **kwargs):
         user = get_object_or_404(User, username=request.data.get('username'))
@@ -129,7 +130,20 @@ class InviteViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         invite = get_object_or_404(Invite, pk=kwargs.get('pk'))
         if invite.user_id != request.user.id:
-            raise ValidationError(code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+            raise PermissionDenied()
         invite.project.collaborators.add(invite.user)
         invite.delete()
         return Response()
+
+    def list(self, request, *args, **kwargs):
+        invites = Invite.objects.filter(user=request.user)
+        serializer = InviteSerializer(invites, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        invite = get_object_or_404(Invite, pk=kwargs.get('pk'))
+        if invite.user != request.user:
+            raise PermissionDenied()
+        invite.delete()
+        return Response()
+

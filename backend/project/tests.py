@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from project.models import Project
+from project.models import Project, Invite
 from repository.models import Repository
 
 url_list = reverse('project-list')
@@ -150,3 +150,63 @@ class ProjectTests(APITestCase):
         self.client.login(username="admin", password="admin")
         response = self.client.delete(url_detail(1))
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+
+invite_url = reverse('invite-list')
+
+
+def invite_url_detail(invite_id):
+    return reverse('invite-detail', args=(invite_id,))
+
+
+class InviteTest(APITestCase):
+    def setUp(self) -> None:
+        admin = User.objects.create_superuser(username="admin", password="admin")
+        user = User.objects.create_user(username="user", password="user")
+        repository1 = Repository.objects.create(url='https://github.com/Tim6FTN/UKS', name='UKS')
+        project1 = Project.objects.create(name="Project1", repository=repository1, owner=admin, is_public=False)
+        invite = Invite.objects.create(user=user, project=project1)
+
+    def test_get_all_invites_unauthenticated(self):
+        response = self.client.get(invite_url)
+        self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
+
+    def test_get_all_invites(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(invite_url)
+        self.assertEqual(0, len(response.data))
+
+    def test_get_all_invites2(self):
+        self.client.login(username="user", password="user")
+        response = self.client.get(invite_url)
+        self.assertEqual(1, len(response.data))
+        self.assertEqual('user', response.data[0].get('user').get('username'))
+
+    def test_accept_invite_forbidden(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(invite_url_detail(1))
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_accept_invite_successful(self):
+        self.client.login(username="user", password="user")
+        response = self.client.get(invite_url_detail(1))
+        project = Project.objects.get(pk=1)
+        self.assertEqual('user', project.collaborators.all()[0].username)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_decline_invite_forbidden(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.delete(invite_url_detail(1))
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_decline_invite_successful(self):
+        self.client.login(username="user", password="user")
+        response = self.client.delete(invite_url_detail(1))
+        project = Project.objects.get(pk=1)
+        self.assertEqual(0, len(project.collaborators.all()))
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_update_invite(self):
+        self.client.login(username="admin", password="admin")
+        response = self.client.put(invite_url_detail(1), data={})
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
