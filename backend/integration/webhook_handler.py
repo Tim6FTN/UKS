@@ -10,6 +10,8 @@ from django.core.handlers.wsgi import WSGIRequest
 
 from integration.constants import GITHUB_EVENT_DESCRIPTIONS
 
+GITHUB_EVENT_DESCRIPTION = 'gh-event-description'
+
 
 class WebhookHandler:
 
@@ -78,12 +80,14 @@ class WebhookHandler:
             except Exception:
                 raise SuspiciousOperation("Request body must contain valid JSON data.")
 
+        event_description = _format_event(event_type, request_data)
         print(f'{WebhookHandler.X_GITHUB_DELIVERY}: {self._get_header(WebhookHandler.X_GITHUB_DELIVERY, request)} | ',
-              f'{_format_event(event_type, request_data)}')
+              f'{event_description}')
         self.__logger.debug(
             f'{WebhookHandler.X_GITHUB_DELIVERY}: {self._get_header(WebhookHandler.X_GITHUB_DELIVERY, request)} | ',
-            f'{_format_event(event_type, request_data)}')
+            f'{event_description}')
 
+        request_data[GITHUB_EVENT_DESCRIPTION] = event_description
         for handler in self.__hooks.get(event_type, []):
             handler(request_data)
 
