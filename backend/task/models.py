@@ -54,7 +54,7 @@ class Task(models.Model):
     assignees = models.ManyToManyField(to=User, blank=True)
 
     def open_task(self):
-        self.state = "Opened"
+        self.state = "Open"
         self.date_opened = datetime.now()
         self.date_closed = None
 

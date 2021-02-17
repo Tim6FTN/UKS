@@ -15,6 +15,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     permission_classes = [IsAuthenticated]
 
+
     def create(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get("project_pk"))
 
@@ -74,16 +75,18 @@ class TaskViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(detail=True)
+    @action(detail=True, methods=['post'], url_path='openTask')
     def open_task(self, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         task.open_task()
         task.save()
-        return Response()
+        serializer = self.serializer_class(instance=task)
+        return Response(serializer.data)
 
-    @action(detail=True)
+    @action(detail=True, methods=['post'], url_path='closeTask')
     def close_task(self, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         task.close_task()
         task.save()
-        return Response()
+        serializer = self.serializer_class(instance=task)
+        return Response(serializer.data)
