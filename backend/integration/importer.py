@@ -29,6 +29,7 @@ class RepositoryImporter:
         self.__owner = str()
         self.__repository_name = str()
         self.__raw_repository_data = dict()
+        self.__raw_commits_data = dict()
 
     def check_if_repository_exists(self):
         repository_response = requests.get(self.__repository_url)
@@ -69,12 +70,13 @@ class RepositoryImporter:
         self.__raw_branches_data = json.loads(branches_response.content.decode('utf-8'))
         self.__names_of_all_branches = [branch_data['name'] for branch_data in self.__raw_branches_data]
 
-    def __fetch_main_branch_commits(self):
-        commits_response = requests.get(f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}/commits?sha=main')
-        if commits_response.status_code != status.HTTP_200_OK:
-            raise SuspiciousOperation(f'Unable to fetch commit info for main branch of repository {self.__repository_url}.')
+    def __fetch_commits(self):
+        for branch_name in self.__names_of_all_branches:
+            commits_response = requests.get(f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}/commits?sha={branch_name}')
+            if commits_response.status_code != status.HTTP_200_OK:
+                raise SuspiciousOperation(f'Unable to fetch commit info for main branch of repository {self.__repository_url}.')
 
-        self.__raw_commits_data = json.loads(commits_response.content.decode('utf-8'))
+            self.__raw_commits_data[branch_name] = json.loads(commits_response.content.decode('utf-8'))
 
     def __create_repository(self) -> Repository:
         return Repository.objects.create(
@@ -87,10 +89,10 @@ class RepositoryImporter:
     def __create_branches(self, repository: Repository):
         return [Branch.objects.create(repository=repository, name=branch_name) for branch_name in self.__names_of_all_branches]
 
-    def __process_main_branch_commits(self, repository: Repository):
-        main_branch = Branch.objects.filter(repository_id=repository.id, name='main').first()
+    def __process_commits(self, repository: Repository, branch_name: str):
+        branch = Branch.objects.filter(repository_id=repository.id, name=branch_name).first()
         handle_commit_func = RepositoryImporter.handle_public_commit if self.__is_repository_public else RepositoryImporter.handle_private_commit
-        for commit_data in self.__raw_commits_data:
+        for commit_data in self.__raw_commits_data[branch_name]:
 
             # Adding missing values because payloads are different
             commit_data['id'] = commit_data['sha']
@@ -103,7 +105,7 @@ class RepositoryImporter:
 
             handle_commit(
                 commit_data=commit_data,
-                branch=main_branch,
+                branch=branch,
                 sha_of_previous_commit='',
                 compare_url_template=commit_full_data_url,
                 diff_handler_func=handle_commit_func
@@ -156,9 +158,10 @@ class RepositoryImporter:
         self.__get_repository_data()
         self.__parse_repository_data()
         self.__fetch_all_branches_data()
-        self.__fetch_main_branch_commits()
+        self.__fetch_commits()
         repository = self.__create_repository()
         branches = self.__create_branches(repository=repository)
-        self.__process_main_branch_commits(repository=repository)
+        for branch in branches:
+            self.__process_commits(repository=repository, branch_name=branch.name)
 
         return repository
