@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import re
 
 import httpx
@@ -20,7 +21,7 @@ EMPTY_STRING = ''
 SLASH = '/'
 
 API_REPOSITORY_URL = 'https://api.github.com/repos'
-
+AUTH_HEADER_DICT = {'Authorization': f'token {os.getenv("gh-access-token")}'}
 
 class RepositoryImporter:
 
@@ -32,7 +33,7 @@ class RepositoryImporter:
         self.__raw_commits_data = dict()
 
     def check_if_repository_exists(self):
-        repository_response = requests.get(self.__repository_url)
+        repository_response = requests.get(self.__repository_url, headers=AUTH_HEADER_DICT)
         if repository_response.status_code != status.HTTP_200_OK:
             raise SuspiciousOperation(f'The repository {self.__repository_url} either does not exist on GitHub, or is private.')
 
@@ -49,7 +50,7 @@ class RepositoryImporter:
         except ValueError:
             raise SuspiciousOperation(f'The repository URL {self.__repository_url} is invalid.')
 
-        repository_response = requests.get(f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}')
+        repository_response = requests.get(f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}', headers=AUTH_HEADER_DICT)
         if repository_response.status_code != status.HTTP_200_OK:
             raise SuspiciousOperation(f'Unable to fetch info for repository {self.__repository_url}.')
 
@@ -63,7 +64,7 @@ class RepositoryImporter:
         self.__branches_url = re.sub('{/branch}', '', self.__raw_repository_data['branches_url'])
 
     def __fetch_all_branches_data(self):
-        branches_response = requests.get(self.__branches_url)
+        branches_response = requests.get(self.__branches_url, headers=AUTH_HEADER_DICT)
         if branches_response.status_code != status.HTTP_200_OK:
             raise SuspiciousOperation(f'Unable to fetch branches info for repository {self.__repository_url}.')
 
@@ -72,7 +73,7 @@ class RepositoryImporter:
 
     def __fetch_commits(self):
         for branch_name in self.__names_of_all_branches:
-            commits_response = requests.get(f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}/commits?sha={branch_name}')
+            commits_response = requests.get(f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}/commits?sha={branch_name}', headers=AUTH_HEADER_DICT)
             if commits_response.status_code != status.HTTP_200_OK:
                 raise SuspiciousOperation(f'Unable to fetch commit info for main branch of repository {self.__repository_url}.')
 
@@ -116,7 +117,7 @@ class RepositoryImporter:
         diff_files = []
         try:
             async with httpx.AsyncClient() as client:
-                diff_response = await asyncio.gather(client.get(compare_url_template))
+                diff_response = await asyncio.gather(client.get(compare_url_template, headers=AUTH_HEADER_DICT))
                 if diff_response[0].status_code == httpx.codes.OK:
                     diff_data = diff_response[0].json()
                     diff_files = diff_data[FILES]
