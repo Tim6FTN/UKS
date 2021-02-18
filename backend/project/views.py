@@ -1,4 +1,8 @@
+import re
+
+import requests
 from django.contrib.auth.models import User
+from django.core.exceptions import SuspiciousOperation
 from django.db.models import Count, Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -6,7 +10,12 @@ from rest_framework.exceptions import ValidationError, PermissionDenied, NotAuth
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.utils import json
 
+from branch.models import Branch
+from commit.models import Commit
+from integration.importer import RepositoryImporter
+from integration.views import handle_commit, COMPARE_URL, handle_private_diff, handle_public_diff
 from label.serializers import LabelSerializer
 from project.models import Project, Invite
 from project.serializers import ProjectSerializer, InviteSerializer
@@ -30,14 +39,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
         name = request.data['name']
         if Project.objects.filter(owner=request.user, name=name).exists():
             raise ValidationError(f"Project with name {name} already exists")
-        # Webhook for repository
+
         repository_url = request.data.get('repositoryUrl')
 
-        repository = Repository.objects.create(name=name, url=repository_url)
+        repository_importer = RepositoryImporter(repository_url=repository_url)
+        repository_importer.check_if_repository_exists()
+        repository = repository_importer.import_repository()
+
         description = request.data['description']
         is_public = request.data.get('isPublic')
-        project = Project.objects.create(name=name, repository=repository, description=description, is_public=is_public,
-                                         owner=request.user)
+        project = Project.objects.create(
+            name=name,
+            repository=repository,
+            description=description,
+            is_public=is_public,
+            owner=request.user
+        )
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
 
