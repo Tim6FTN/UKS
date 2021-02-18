@@ -130,6 +130,18 @@ const ProjectNavbar = ({
             </Link>
           </div>
         )}
+        {user && (
+            <div
+                className={`nav-item nav-link ${
+                    route == "/project/[id]/insights" ? "active" : ""
+                }`}
+            >
+              {" "}
+              <Link href={`/project/${project.id}/insights`}>
+                <a style={{ textDecorationLine: "none" }}> Insights </a>
+              </Link>
+            </div>
+        )}
       </div>
     </>
   );
