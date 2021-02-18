@@ -5,6 +5,7 @@ import Container from '../../../../../components/util/container';
 import ProjectWrapper from '../../../../../components/project/wrapper';
 import TaskService from '../../../../../services/taskService';
 import LittleLabel from '../../../../../components/task/littleLabel';
+import Link from 'next/link';
 
 const Task = () => {
   const [task, setTask] = useState(null);
@@ -120,12 +121,14 @@ const Task = () => {
                           <span>{task.priority}</span>
                         </div>
                         <div className='col-sm-3'>
-                          <button
+                        <Link href={`/project/${projectId}/task/${taskId}/edit`}>
+                        <button
                             type='button'
                             className='btn btn-secondary'
                             style={{ minWidth: '80px' }}>
                             Edit
                           </button>
+                        </Link>                         
                         </div>
                       </div>
                     </div>

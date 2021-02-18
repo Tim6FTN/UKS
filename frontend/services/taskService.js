@@ -16,8 +16,15 @@ const get = async (projectId, taskId) =>
     },
   });
 
-const create = async (projectId, task) =>
-  await axios.post(`${taskUrl(projectId)}`, task, {
+const create = async (projectId, taskId) =>
+  await axios.post(`${taskUrl(projectId)}`, taskId, {
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`,
+    },
+  });
+
+const patch = async (projectId, taskId, data) =>
+  await axios.patch(`${taskUrl(projectId)}${taskId}/`, data, {
     headers: {
       Authorization: `Token ${localStorage.getItem('token')}`,
     },
@@ -41,6 +48,7 @@ const TaskService = {
   get,
   getAll,
   create,
+  patch,
   openTask,
   closeTask,
 };

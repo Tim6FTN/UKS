@@ -92,9 +92,6 @@ const TaskForm = () => {
     const selectedValue = e.target.value;
     switch (name) {
       case 'milestone':
-        /* const selectedMilestoneId = milestones.filter((milestone) => milestone.id === selectedValue)
-          .id;
-        */
         if (selectedValue === '') {
           const newState = { ...newTask };
           delete newState.milestone;
