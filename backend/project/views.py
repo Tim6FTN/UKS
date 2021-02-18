@@ -6,8 +6,6 @@ from rest_framework.exceptions import ValidationError, PermissionDenied, NotAuth
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.response import Response
-
-from label.serializers import LabelSerializer
 from project.models import Project, Invite
 from project.serializers import ProjectSerializer, InviteSerializer
 from repository.models import Repository

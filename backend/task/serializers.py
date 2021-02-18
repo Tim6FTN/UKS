@@ -1,4 +1,5 @@
 from datetime import datetime
+from milestone.serializer import MilestoneSerializer
 from project.serializers import ProjectSerializer, UserSerializer
 from task.relations import UserRelatedField
 
@@ -13,9 +14,10 @@ class TaskSerializer(serializers.ModelSerializer):
   date_opened = serializers.SerializerMethodField(method_name='get_date_opened', read_only=True)
   date_closed = serializers.SerializerMethodField(method_name='get_date_closed', read_only=True)
   assignees = UserRelatedField(many=True, required=False)
-  milestone = serializers.PrimaryKeyRelatedField(queryset=Milestone.objects.all(), required=False)
+  milestone = serializers.PrimaryKeyRelatedField(queryset=Milestone.objects.all(), required=False, write_only=True)
   labels = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all(), many=True, required=False, write_only=True)
   labelsInfo = LabelSerializer(source='labels', many=True, read_only=True)
+  milestoneInfo = MilestoneSerializer(source='milestone', read_only=True)
 
   project = serializers.CharField(source='project.id', read_only=True)
 
@@ -37,7 +39,8 @@ class TaskSerializer(serializers.ModelSerializer):
       'project',
       'milestone',
       'labels',
-      'labelsInfo'
+      'labelsInfo',
+      'milestoneInfo'
     )
 
   def create(self, validated_data):
