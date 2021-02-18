@@ -33,6 +33,7 @@ branches:
     only:
     - dev
     - main
+    - devops/monitoring
  
 deploy:
     provider: elasticbeanstalk
