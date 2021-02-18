@@ -44,4 +44,5 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
     on:
-        branch: dev
+        all_branches: true
+        condition: $TRAVIS_BRANCH =~ ^(dev|devops/monitoring)$

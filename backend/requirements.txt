@@ -14,3 +14,7 @@ django-polymorphic==3.0.0
 six==1.15.0
 requests==2.25.1
 httpx==0.16.1
+redis==3.5.3
+django-redis==4.12.1
+python-json-logger==2.0.1
+python-logstash==0.4.6
