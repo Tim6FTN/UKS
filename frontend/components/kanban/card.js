@@ -3,35 +3,44 @@ import React from "react";
 import styles from './kanban.module.css';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrophy, faUserNinja} from "@fortawesome/free-solid-svg-icons";
+import Link from 'next/link';
 
-const Card = ({task, index}) => {
+const Card = ({task, index, projectId, isEditable}) => {
     return (
-        <Draggable draggableId={task.id} index={index} >
+        <Draggable draggableId={task.id + ""} index={index} isDragDisabled={!isEditable}>
             {provided => (
                 <div className={`card m-2 ${styles.cardCustom}`} ref={provided.innerRef}
                      {...provided.draggableProps}
                      {...provided.dragHandleProps}>
-                    <div className="card-body pb-1">
-                        <h6 className="card-subtitle mb-1" style={{color: '#0464d4'}}>{task.title}</h6>
+                    <div className="card-body pb-2">
+                        <h6 className="card-subtitle mb-1" style={{color: '#0464d4'}}>
+                            {
+                                isEditable ?
+                                    <Link href={`/project/${projectId}/task/${task.id}`}>
+                                        {task.title}
+                                    </Link> : <span>{task.title}</span>
+                            }
+                        </h6>
                         <span className={styles.cardSmallText}>
-                            Opened by: <b>Usernaam</b>
+                            Opened by: <b>{task.author.username}</b>
                         </span>
                         <div className={`row justify-content-between mt-3 ${styles.cardSmallText}`}>
                             <div className="row justify-content-center ml-3">
                                 <FontAwesomeIcon className="mr-1" icon={faTrophy}/>
-                                <p>Stable release</p>
+                                {
+                                    task.milestoneInfo ? <span>{task.milestoneInfo.title}</span>
+                                        : <span className="small">No milestone</span>
+                                }
                             </div>
                             {
-                                //todo if assigned render user
+                                task.assignees.length > 0 &&
+                                <div className="mr-3">
+                                    <FontAwesomeIcon icon={faUserNinja} />
+                                </div>
                             }
-                            <div className="mr-3">
-                                <FontAwesomeIcon icon={faUserNinja} />
-                            </div>
                         </div>
                     </div>
-
                 </div>
-
             )}
         </Draggable>
     );

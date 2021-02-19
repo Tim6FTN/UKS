@@ -1,83 +1,38 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {DragDropContext, Droppable} from "react-beautiful-dnd";
 import Card from "./card";
 import styles from './kanban.module.css';
-import {taskPiority, taskState, taskStatus} from "./task.model";
-
-const TaskList = React.memo(function TaskList({tasks}) {
-    return tasks.map((task, index) => (
-        <Card task={task} index={index} key={task.id}/>
-    ));
-});
+import {taskStatus} from "./task.model";
+import TaskService from '../../services/taskService';
+import {useRouter} from "next/router";
 
 const BOARD_NAMES = ['Backlog', 'To Do', 'In Progress', 'Done'];
+const POSSIBLE_STATUSES = ['Backlog', 'ToDo', 'InProgress', 'Done'];
 
-const Board = () => {
-    const tasks = [
-        {
-            id: '1',
-            content: 'Task 1',
-            title: 'titaaaaaaaaaaaaaaaaaaaaaaaassssssssssssssssssssssssssssaaaale',
-            priority: taskPiority.LOW,
-            state: taskState.OPEN,
-            status: taskStatus.BACKLOG
-        },
-        {
-            id: '2',
-            content: 'Task 2',
-            title: 'title',
-            priority: taskPiority.LOW,
-            state: taskState.OPEN,
-            status: taskStatus.TODO
-        },
-        {
-            id: '3',
-            content: 'Task 3',
-            title: 'title',
-            priority: taskPiority.LOW,
-            state: taskState.OPEN,
-            status: taskStatus.IN_PROGRESS
-        },
-        {
-            id: '4',
-            content: 'Task 4',
-            title: 'title',
-            priority: taskPiority.LOW,
-            state: taskState.OPEN,
-            status: taskStatus.DONE
-        },
-        {
-            id: '5',
-            content: 'Task 5',
-            title: 'title',
-            priority: taskPiority.LOW,
-            state: taskState.OPEN,
-            status: taskStatus.BACKLOG
-        },
-        {
-            id: '6',
-            content: 'Task 6',
-            title: 'title',
-            priority: taskPiority.LOW,
-            state: taskState.OPEN,
-            status: taskStatus.BACKLOG
-        },
-    ];
+const Board = ({isEditable}) => {
+    const [tasks, setTasks] = useState([]);
+    const [projectId, setProjectId] = useState(null);
+    const router = useRouter();
 
-    const [state, setState] = useState([]);
+    useEffect(() => {
+        if (router.query.id) {
+            getTasks(router.query.id);
+            setProjectId(router.query.id);
+        }
+    }, [router.query.id]);
 
-    React.useEffect(() => {
-        // todo load tasks
-        setState([
-            tasks.filter(el => el.status === taskStatus.BACKLOG),
-            tasks.filter(el => el.status === taskStatus.TODO),
-            tasks.filter(el => el.status === taskStatus.IN_PROGRESS),
-            tasks.filter(el => el.status === taskStatus.DONE)
-        ])
-    }, []);
+    const getTasks = async (id) => {
+        const newTasks = (await TaskService.getAll(id)).data;
+        setTasks([
+            newTasks.filter(el => el.task_status === taskStatus.BACKLOG),
+            newTasks.filter(el => el.task_status === taskStatus.TODO),
+            newTasks.filter(el => el.task_status === taskStatus.IN_PROGRESS),
+            newTasks.filter(el => el.task_status === taskStatus.DONE)
+        ]);
+    };
 
-    function onDragEnd(result) {
-        const {source, destination} = result;
+    function onDragEnd(res) {
+        const {source, destination} = res;
 
         // dropped outside the list
         if (!destination) {
@@ -87,17 +42,17 @@ const Board = () => {
         const dInd = +destination.droppableId;
 
         if (sInd === dInd) {
-            const items = reorder(state[sInd], source.index, destination.index);
-            const newState = [...state];
+            const items = reorder(tasks[sInd], source.index, destination.index);
+            const newState = [...tasks];
             newState[sInd] = items;
-            setState(newState);
+            setTasks(newState);
         } else {
-            const result = move(state[sInd], state[dInd], source, destination);
-            const newState = [...state];
+            const result = move(tasks[sInd], tasks[dInd], source, destination);
+            const newState = [...tasks];
             newState[sInd] = result[sInd];
             newState[dInd] = result[dInd];
 
-            setState(newState);
+            setTasks(newState);
         }
     }
 
@@ -122,20 +77,28 @@ const Board = () => {
         result[droppableSource.droppableId] = sourceClone;
         result[droppableDestination.droppableId] = destClone;
 
+        const newStatus = POSSIBLE_STATUSES[droppableDestination.droppableId];
+        const updatedTask = {...source[droppableSource.index], task_status: newStatus};
+        updateStatus(updatedTask).then(() => console.log('success'));
+
         return result;
     };
+
+    const updateStatus = async (updatedTask) => {
+        await TaskService.patch(projectId, updatedTask.id, updatedTask);
+    }
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <div className="row flex-nowrap">
-                {state.map((el, ind) => (
+                {tasks.map((el, ind) => (
                     <div className="col-3 p-2" key={ind}>
                         <Droppable droppableId={`${ind}`}>
                             {(provided,) => (
                                 <div ref={provided.innerRef} {...provided.droppableProps} className={styles.board}>
                                     <h5 className={styles.boardTitle}>{BOARD_NAMES[ind]}</h5>
                                     {el.map((item, index) => (
-                                        <Card key={item.id} task={item} index={index}/>
+                                        <Card key={item.id} task={item} index={index} projectId={projectId} isEditable={isEditable}/>
                                     ))}
                                     {provided.placeholder}
                                 </div>
