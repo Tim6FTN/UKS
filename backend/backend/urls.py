@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from task.views import TaskViewSet
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
@@ -36,6 +37,7 @@ router.register(r'commit', CommitViewSet)
 
 projects_router = nested_router.NestedSimpleRouter(router, r'project', lookup='project')
 projects_router.register(r'label', LabelViewSet)
+projects_router.register(r'task', TaskViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),

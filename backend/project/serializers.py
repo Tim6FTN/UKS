@@ -1,6 +1,9 @@
+from milestone.serializer import MilestoneSerializer
 from django.contrib.auth.models import User
+from django.db.models.fields.related import RelatedField
 from rest_framework import serializers
 
+from label.serializers import LabelSerializer
 from project.models import Project, Invite
 from repository.models import Repository
 
@@ -19,11 +22,13 @@ class ProjectSerializer(serializers.ModelSerializer):
     repository = serializers.PrimaryKeyRelatedField(read_only=True)
     is_public = serializers.BooleanField(default=True)
     wiki_content = serializers.CharField(default='', allow_blank=True)
+    labels = LabelSerializer(source='label_set', many=True, read_only=True)
+    milestone = MilestoneSerializer(source='milestone_set', many=True, read_only=True)
 
     class Meta:
         model = Project
         fields = ['id', 'name', 'owner', 'description', 'repository', 'repository_url', 'stars', 'collaborators',
-                  'is_public', 'wiki_content']
+                  'is_public', 'wiki_content', 'collaborators', 'labels', 'milestone']
 
     def get_fields(self, *args, **kwargs):
         fields = super(ProjectSerializer, self).get_fields()
