@@ -95,7 +95,9 @@ const ProjectNavbar = ({
           }`}
         >
           {" "}
-          <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          <Link href={`/project/${project.id}/kanban`}>
+            <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          </Link>
         </div>
         <div
           className={`nav-item nav-link ${
