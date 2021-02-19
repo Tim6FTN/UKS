@@ -21,7 +21,7 @@ EMPTY_STRING = ''
 SLASH = '/'
 
 API_REPOSITORY_URL = 'https://api.github.com/repos'
-AUTH_HEADER_DICT = {'Authorization': 'token 793e7f5d39b0fe518f62e1156ac799250837b804'}
+AUTH_HEADER_DICT = {'Authorization': 'token 39fb97c7df39d5124a8836401a8e7e339d5e8855'}
 
 class RepositoryImporter:
 
