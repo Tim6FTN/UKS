@@ -1,5 +1,6 @@
 import asyncio
 import re
+from datetime import datetime
 
 import httpx as httpx
 from asgiref.sync import sync_to_async
@@ -7,6 +8,7 @@ from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -17,7 +19,7 @@ from integration.constants import *
 from integration.webhook_handler import WebhookHandler, GITHUB_EVENT_DESCRIPTION
 from project.models import Project
 from repository.models import Repository
-from task.models import Task, CLOSED, OPEN
+from task.models import Task, CLOSED, OPEN, DONE
 
 webhook_handler = WebhookHandler()
 
@@ -181,7 +183,7 @@ def handle_closing_task_references(commit: Commit, project: Project, event_descr
 
     created_changes = [CloseCommitReference.objects.create(
         change_type=UPDATE, description=event_description, task=task, referenced_commit=commit) for task in tasks_to_close]
-    tasks_to_close.update(state=CLOSED)
+    tasks_to_close.update(state=CLOSED, task_status=DONE, date_closed=datetime.now(tz=timezone.utc))
 
     return created_changes
 
