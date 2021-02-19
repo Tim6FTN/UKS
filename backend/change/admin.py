@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from change.models import MilestoneChange, TaskChange, DueDateChange, StartDateChange
+from change.models import Comment, CommentEdit, MilestoneChange, TaskChange, DueDateChange, StartDateChange
 
 
 @admin.register(MilestoneChange)
@@ -18,4 +18,12 @@ class StartDateChangeAdmin(admin.ModelAdmin):
 
 @admin.register(TaskChange)
 class TaskChangeAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(CommentEdit)
+class CommentEditAdmin(admin.ModelAdmin):
     pass

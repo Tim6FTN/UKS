@@ -1,4 +1,4 @@
-from datetime import datetime
+from change.serializers import CommentSerializer
 from django.contrib.auth.models import User
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -6,8 +6,10 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from task.serializers import TaskSerializer
+
 from .models import Task
 from .models import Project
+from change.models import Comment, CREATE
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -63,6 +65,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             data=serializer_data,
             partial=True
         )
+
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -90,3 +93,22 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.save()
         serializer = self.serializer_class(instance=task)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get', 'post'], url_path='comment')
+    def get_comments(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, id=kwargs.get("pk"))
+        if (request.method == "GET"):
+            comments = Comment.objects.filter(task_id=task.id)
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data)
+        else:
+            task = get_object_or_404(Task, id=kwargs.get("pk"))
+            comment = Comment.objects.create(
+                user = request.user,
+                text = request.data.get('text', ''),
+                change_type = CREATE,
+                task = task
+            )
+            serializer = CommentSerializer(comment)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
