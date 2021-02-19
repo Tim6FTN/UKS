@@ -85,8 +85,9 @@ const ProjectNavbar = ({
             route == "/project/[id]/tasks" ? "active" : ""
           }`}
         >
-          {" "}
-          <a style={{ textDecorationLine: "none" }}> Tasks </a>
+          <Link href={`/project/${project.id}/task`}>
+            <a style={{ textDecorationLine: "none" }}> Tasks </a>
+          </Link>
         </div>
         <div
           className={`nav-item nav-link ${
@@ -94,7 +95,9 @@ const ProjectNavbar = ({
           }`}
         >
           {" "}
-          <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          <Link href={`/project/${project.id}/kanban`}>
+            <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          </Link>
         </div>
         <div
           className={`nav-item nav-link ${
