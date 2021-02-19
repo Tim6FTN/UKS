@@ -15,13 +15,13 @@ const Tasks = () => {
 
   useEffect(() => {
     if (router.query.id) {
-      getTasks(projectId);
-      setProjectId(router.query.id);
+      getTasks(router.query.id);
     }
   }, [router.query.id]);
 
-  const getTasks = async (projectId) => {
-    const newTasks = (await TaskService.getAll(projectId)).data;
+  const getTasks = async (paramProjectId) => {
+    const newTasks = (await TaskService.getAll(paramProjectId)).data;
+    setProjectId(paramProjectId);
     setTasks(newTasks);
   };
 
