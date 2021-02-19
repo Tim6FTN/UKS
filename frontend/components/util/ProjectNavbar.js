@@ -121,7 +121,8 @@ const ProjectNavbar = ({
             </Link>
           </div>
         )}
-        {user && (
+        {user && (user?.id === project.owner.id || 
+              project?.collaborators?.some((collab) => collab.id == user.id)) && (
           <div
             className={`nav-item nav-link ${
               route == "/project/[id]/label" ? "active" : ""
