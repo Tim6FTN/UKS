@@ -31,9 +31,9 @@ const RichEditor = ({project, user}) => {
 
     React.useEffect(() => {
         if (user && project) {
-            const isMine = project.owner.id === user.id || project.collaborators?.find((el) => el.id === user.id);
-            setIsEditable(isMine);
-            setIsMine(isMine);
+            const mine = project.owner.id === user.id;
+            setIsEditable(mine);
+            setIsMine(mine);
         }
     }, [user, project]);
 
