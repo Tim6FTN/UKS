@@ -15,6 +15,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
+      - GH_ACCESS_TOKEN=${GH_TOKEN}
     depends_on:
       - db
   db:
