@@ -144,6 +144,9 @@ const Task = () => {
                           </div>
                         )}
                     </div>
+                    <div className='row mt-2 border-top border-dark'>
+                       history
+                    </div>
                   </div>
                 </div>
               </div>

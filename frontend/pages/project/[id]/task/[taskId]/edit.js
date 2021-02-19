@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
-import ProjectWrapper from '../../../../../components/project/wrapper';
-import TaskService from '../../../../../services/taskService';
-import ProjectService from '../../../../../services/projectService';
-import { useRouter } from 'next/router';
+import { useState, useEffect, useContext } from "react";
+import ProjectWrapper from "../../../../../components/project/wrapper";
+import TaskService from "../../../../../services/taskService";
+import ProjectService from "../../../../../services/projectService";
+import { useRouter } from "next/router";
+import { ProjectContext } from "../../../../../contexts/projectContext";
 
 const EditTask = () => {
   const [newTask, setNewTask] = useState({});
   const [projectId, setProjectId] = useState(null);
-  const [project, setProject] = useState(null);
+  const { project } = useContext(ProjectContext);
   const [taskId, setTaskId] = useState(null);
   const [task, setTask] = useState(null);
-  const priorities = ['Low', 'Medium', 'High'];
+  const priorities = ["Low", "Medium", "High"];
   const router = useRouter();
 
   useEffect(() => {
@@ -20,9 +21,9 @@ const EditTask = () => {
   }, [router.query.taskId]);
 
   const getTask = async (paramProjectId, paramTaskId) => {
-    const taskCurrentState = (await TaskService.get(paramProjectId, paramTaskId)).data;
-    const projectRes = (await ProjectService.getById(paramProjectId)).data;
-    setProject(projectRes);
+    const taskCurrentState = (
+      await TaskService.get(paramProjectId, paramTaskId)
+    ).data;
     setTask(taskCurrentState);
     setProjectId(paramProjectId);
     setTaskId(paramTaskId);
@@ -39,12 +40,15 @@ const EditTask = () => {
   };
 
   const handleMultiSelect = (name) => (e) => {
-    const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
+    const selectedValues = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
     switch (name) {
-      case 'assignees':
+      case "assignees":
         setNewTask({ ...newTask, assignees: selectedValues });
         break;
-      case 'label':
+      case "label":
         setNewTask({ ...newTask, labels: selectedValues.map((val) => +val) });
         break;
       default:
@@ -55,8 +59,8 @@ const EditTask = () => {
   const handleSelect = (name) => (e) => {
     const selectedValue = e.target.value;
     switch (name) {
-      case 'milestone':
-        if (selectedValue === '') {
+      case "milestone":
+        if (selectedValue === "") {
           const newState = { ...newTask };
           delete newState.milestone;
           setNewTask({ ...newState });
@@ -64,7 +68,7 @@ const EditTask = () => {
           setNewTask({ ...newTask, milestone: +selectedValue });
         }
         break;
-      case 'priority':
+      case "priority":
         setNewTask({ ...newTask, priority: selectedValue });
       default:
         break;
@@ -76,29 +80,31 @@ const EditTask = () => {
       <ProjectWrapper>
         {task && (
           <form onSubmit={handleSubmit}>
-            <div className='row'>
-              <div className='col-sm-8'>
-                <div className='card'>
-                  <div className='card-body'>
-                    <div className='card-title'>
-                      <p className='h3'>Edit task</p>
+            <div className="row">
+              <div className="col-sm-8">
+                <div className="card">
+                  <div className="card-body">
+                    <div className="card-title">
+                      <p className="h3">Edit task</p>
                     </div>
-                    <div className='card-text'>
+                    <div className="card-text">
                       <span>Title: </span>
                       <input
-                        type='text'
-                        className='form-control mb-4'
-                        onChange={handleChange('title')}
+                        type="text"
+                        className="form-control mb-4"
+                        onChange={handleChange("title")}
                         defaultValue={task.title}
-                        required></input>
+                        required
+                      ></input>
                       <span>Description: </span>
                       <textarea
-                        className='form-control'
-                        rows='8'
-                        onChange={handleChange('description')}
-                        defaultValue={task.description}></textarea>
-                      <div className='text-right mt-3'>
-                        <button type='submit' className='btn btn-primary'>
+                        className="form-control"
+                        rows="8"
+                        onChange={handleChange("description")}
+                        defaultValue={task.description}
+                      ></textarea>
+                      <div className="text-right mt-3">
+                        <button type="submit" className="btn btn-primary">
                           Submit
                         </button>
                       </div>
@@ -106,16 +112,17 @@ const EditTask = () => {
                   </div>
                 </div>
               </div>
-              <div className='col-sm-4'>
-                <div className='row'>
+              <div className="col-sm-4">
+                <div className="row">
                   <div>Priority</div>
                 </div>
-                <div className='row'>
+                <div className="row">
                   <select
-                    className='custom-select'
-                    onChange={handleChange('priority')}
-                    defaultValue={task.priority}>
-                    <option value='NotAssigned'>Not assigned</option>
+                    className="custom-select"
+                    onChange={handleChange("priority")}
+                    defaultValue={task.priority}
+                  >
+                    <option value="NotAssigned">Not assigned</option>
                     {priorities &&
                       priorities.map((priority) => (
                         <option key={priority} value={priority}>
@@ -124,32 +131,34 @@ const EditTask = () => {
                       ))}
                   </select>
                 </div>
-                <div className='row'>
+                <div className="row">
                   <div>Assignee:</div>
                 </div>
-                <div className='row'>
+                <div className="row">
                   <select
-                    className='custom-select'
-                    onChange={handleMultiSelect('assignees')}
+                    className="custom-select"
+                    onChange={handleMultiSelect("assignees")}
                     defaultValue={task.assignees}
-                    multiple>
+                    multiple
+                  >
                     {project?.collaborators &&
-                      project.collaborators.map((user) => (
+                      [project.owner, ...project.collaborators].map((user) => (
                         <option key={user.id} value={user.username}>
                           {user.username}
                         </option>
                       ))}
                   </select>
                 </div>
-                <div className='row mt-2'>
+                <div className="row mt-2">
                   <div>Labels</div>
                 </div>
-                <div className='row'>
+                <div className="row">
                   <select
-                    className='custom-select'
-                    onChange={handleMultiSelect('label')}
+                    className="custom-select"
+                    onChange={handleMultiSelect("label")}
                     multiple
-                    defaultValue={task.labelsInfo.map((label) => label.id)}>
+                    defaultValue={task.labelsInfo.map((label) => label.id)}
+                  >
                     {project?.labels &&
                       project?.labels.map((label) => (
                         <option key={label.id} value={label.id}>
@@ -158,15 +167,16 @@ const EditTask = () => {
                       ))}
                   </select>
                 </div>
-                <div className='row mt-2'>
+                <div className="row mt-2">
                   <div>Milestone</div>
                 </div>
-                <div className='row'>
+                <div className="row">
                   <select
                     defaultValue={task.milestone}
-                    className='custom-select'
-                    onChange={handleSelect('milestone')}>
-                    <option key='' value=''></option>
+                    className="custom-select"
+                    onChange={handleSelect("milestone")}
+                  >
+                    <option key="" value=""></option>
                     {project?.milestone &&
                       project.milestone.map((milestone) => (
                         <option key={milestone.id} value={milestone.id}>
