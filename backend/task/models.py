@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 from label.models import Label
-from datetime import datetime
+from datetime import datetime, timezone
 
 from milestone.models import Milestone
 from project.models import Project
@@ -55,12 +56,12 @@ class Task(models.Model):
 
     def open_task(self):
         self.state = "Open"
-        self.date_opened = datetime.now()
+        self.date_opened = datetime.now(tz=timezone.utc)
         self.date_closed = None
 
     def close_task(self):
         self.state = 'Closed'
-        self.date_closed = datetime.now()
+        self.date_closed = datetime.now(tz=timezone.utc)
 
     def __str__(self):
         return self.title

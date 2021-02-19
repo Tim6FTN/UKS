@@ -95,7 +95,9 @@ const ProjectNavbar = ({
           }`}
         >
           {" "}
-          <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          <Link href={`/project/${project.id}/kanban`}>
+            <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          </Link>
         </div>
         <div
           className={`nav-item nav-link ${
@@ -119,7 +121,8 @@ const ProjectNavbar = ({
             </Link>
           </div>
         )}
-        {user && (
+        {user && (user?.id === project.owner.id || 
+              project?.collaborators?.some((collab) => collab.id == user.id)) && (
           <div
             className={`nav-item nav-link ${
               route == "/project/[id]/label" ? "active" : ""

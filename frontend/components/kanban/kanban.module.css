@@ -1,0 +1,23 @@
+.board {
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    /*margin: 5px;*/
+    background-color: #f6f8fa;
+}
+
+.boardTitle {
+    margin: 1rem;
+}
+
+.cardCustom {
+    border: 1px solid #ececec;
+}
+
+.cardCustom:active {
+    border: 2px solid #9cd4d6;
+}
+
+.cardSmallText {
+    font-size: small;
+    color: gray;
+}

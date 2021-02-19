@@ -21,7 +21,7 @@ EMPTY_STRING = ''
 SLASH = '/'
 
 API_REPOSITORY_URL = 'https://api.github.com/repos'
-AUTH_HEADER_DICT = {'Authorization': f'token {os.getenv("gh-access-token")}'}
+AUTH_HEADER_DICT = {'Authorization': f"token {os.getenv('GH_ACCESS_TOKEN')}"}
 
 class RepositoryImporter:
 

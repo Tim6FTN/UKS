@@ -1,16 +1,19 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import NavBar from '../../../../../components/util/navbar';
-import Container from '../../../../../components/util/container';
 import ProjectWrapper from '../../../../../components/project/wrapper';
 import TaskService from '../../../../../services/taskService';
 import LittleLabel from '../../../../../components/task/littleLabel';
 import Link from 'next/link';
+import { useContext } from 'react';
+import { ProjectContext } from '../../../../../contexts/projectContext';
+import { UserContext } from '../../../../../contexts/userContext';
 
 const Task = () => {
   const [task, setTask] = useState(null);
   const [taskId, setTaskId] = useState(null);
   const [projectId, setProjectId] = useState(null);
+  const { user } = useContext(UserContext);
+  const { project } = useContext(ProjectContext);
   const router = useRouter();
 
   useEffect(() => {
@@ -120,22 +123,26 @@ const Task = () => {
                       </div>
                       <div className='col-sm-4'>
                         <span className='h5 ml-3 mt-3'>Milestone:</span>
-                        <span>{task.milestoneInfo.title}</span>
+                        <span>{task.milestoneInfo?.title}</span>
                       </div>
                     </div>
                     <div className='row'>
-                      <div className='ml-auto mr-5 mt-3'>
-                        <Link
-                          className='ml-auto'
-                          href={`/project/${projectId}/task/${taskId}/edit`}>
-                          <button
-                            type='button'
-                            className='btn btn-secondary'
-                            style={{ minWidth: '80px' }}>
-                            Edit
-                          </button>
-                        </Link>
-                      </div>
+                      {user &&
+                        (user?.id === project.owner.id ||
+                          project?.collaborators?.some((collab) => collab.id == user.id)) && (
+                          <div className='ml-auto mr-5 mt-3'>
+                            <Link
+                              className='ml-auto'
+                              href={`/project/${projectId}/task/${taskId}/edit`}>
+                              <button
+                                type='button'
+                                className='btn btn-secondary'
+                                style={{ minWidth: '80px' }}>
+                                Edit
+                              </button>
+                            </Link>
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -148,21 +155,27 @@ const Task = () => {
                 </div>
               </div>
               <div className='row'>
-                {task.state === 'Open' ? (
-                  <button
-                    type='button'
-                    className='btn btn-danger btn-block'
-                    onClick={handleTaskStateChange}>
-                    Close
-                  </button>
-                ) : (
-                  <button
-                    type='button'
-                    className='btn btn-success btn-block'
-                    onClick={handleTaskStateChange}>
-                    Open
-                  </button>
-                )}
+                {user &&
+                  (user?.id === project.owner.id ||
+                    project?.collaborators?.some((collab) => collab.id == user.id)) && (
+                    <>
+                      {task.state === 'Open' ? (
+                        <button
+                          type='button'
+                          className='btn btn-danger btn-block'
+                          onClick={handleTaskStateChange}>
+                          Close
+                        </button>
+                      ) : (
+                        <button
+                          type='button'
+                          className='btn btn-success btn-block'
+                          onClick={handleTaskStateChange}>
+                          Open
+                        </button>
+                      )}
+                    </>
+                  )}
               </div>
               {task.assignees && task.assignees.length > 0 && (
                 <>
