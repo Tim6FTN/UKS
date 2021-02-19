@@ -78,14 +78,14 @@ const Board = ({isEditable}) => {
         result[droppableDestination.droppableId] = destClone;
 
         const newStatus = POSSIBLE_STATUSES[droppableDestination.droppableId];
-        const updatedTask = {...source[droppableSource.index], task_status: newStatus};
-        updateStatus(updatedTask).then(() => console.log('success'));
+        const taskId = source[droppableSource.index].id;
+        updateStatus(taskId, {task_status: newStatus});
 
         return result;
     };
 
-    const updateStatus = async (updatedTask) => {
-        await TaskService.patch(projectId, updatedTask.id, updatedTask);
+    const updateStatus = async (taskId, newStatus) => {
+        await TaskService.patch(projectId, taskId, newStatus);
     }
 
     return (
