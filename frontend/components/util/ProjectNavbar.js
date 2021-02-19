@@ -91,6 +91,15 @@ const ProjectNavbar = ({
         </div>
         <div
           className={`nav-item nav-link ${
+            route == "/project/[id]/milestone" ? "active" : ""
+          }`}
+        >
+          <Link href={`/project/${project.id}/milestone`}>
+            <a style={{ textDecorationLine: "none" }}> Milestones </a>
+          </Link>
+        </div>
+        <div
+          className={`nav-item nav-link ${
             route == "/project/[id]/kanban" ? "active" : ""
           }`}
         >
