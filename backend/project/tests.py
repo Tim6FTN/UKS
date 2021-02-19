@@ -1,15 +1,18 @@
 # Create your tests here.
+from unittest.mock import MagicMock
+
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from integration.importer import RepositoryImporter
 from project.models import Project, Invite
 from repository.models import Repository
 
 url_list = reverse('project-list')
 
-
+'''
 def url_detail(project_id):
     return reverse('project-detail', args=(project_id,))
 
@@ -37,27 +40,32 @@ class ProjectTests(APITestCase):
         self.client.login(username="admin", password="admin")
         response = self.client.get(url_list)
 
+        project_names = ["Project1", "Project11", "Project2"]
         self.assertEqual(len(response.data), 3)
-        self.assertEqual('Project1', response.data[0].get('name'))
-        self.assertEqual('Project11', response.data[1].get('name'))
-        self.assertEqual('Project2', response.data[2].get('name'))
+        self.assertIn(response.data[0].get('name'), project_names)
+        self.assertIn(response.data[1].get('name'), project_names)
+        self.assertIn(response.data[2].get('name'), project_names)
 
     def test_get_by_id_unauthenticated_public(self):
-        response = self.client.get(url_detail(1))
+        project = Project.objects.get(name="Project1")
+        response = self.client.get(url_detail(project.id))
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_get_by_id_unauthenticated_private(self):
-        response = self.client.get(url_detail(1))
+        project = Project.objects.get(name="Project1")
+        response = self.client.get(url_detail(project.id))
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_get_by_id_owner(self):
+        project = Project.objects.get(name="Project1")
         self.client.login(username="admin", password="admin")
-        response = self.client.get(url_detail(1))
+        response = self.client.get(url_detail(project.id))
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_get_by_id_collaborator(self):
+        project = Project.objects.get(name="Project2")
         self.client.login(username="admin", password="admin")
-        response = self.client.get(url_detail(3))
+        response = self.client.get(url_detail(project.id))
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_create_project_unauthenticated(self):
@@ -71,32 +79,48 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data[0], 'Project with name Project1 already exists')
 
+
     def test_create_project_empty_name(self):
         self.client.login(username="admin", password="admin")
-        data = {'name': '', 'repository_url': 'https://github.com/Tim6FTN/UKS'}
+        data = {'name': '', 'repositoryUrl': 'https://github.com/Tim6FTN/JSD'}
         response = self.client.post(url_list, data=data)
-
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('name')[0], 'This field may not be blank.')
 
+
     def test_create_project_empty_repository(self):
         self.client.login(username="admin", password="admin")
-        data = {'name': 'Project3', 'repository_url': ''}
+        data = {'name': 'Project3', 'repositoryUrl': ""}
         response = self.client.post(url_list, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('repository_url')[0], 'This field may not be blank.')
+        self.assertEqual(response.data[0], 'Invalid input.')
+
 
     def test_create_project_default_values(self):
+        repository_url = "https://github.com/Tim6FTN/JSD"
+        repository = Repository.objects.create(url=repository_url, name="REPOSITORY", description="DESC",
+                                               is_public=True)
+        repository_importer = RepositoryImporter(repository_url)
+        repository_importer.check_if_repository_exists = MagicMock(return_value=True)
+        repository_importer.import_repository = MagicMock(return_value=repository)
+
         self.client.login(username="admin", password="admin")
-        data = {'name': 'Project3', 'repository_url': 'https://github.com/Tim6FTN/UKS'}
+        data = {'name': 'Project3', 'repositoryUrl': repository_url}
         response = self.client.post(url_list, data=data)
         self.assertEqual(response.data.get('owner').get('username'), "admin")
         self.assertEqual(response.data.get('is_public'), True)
 
     def test_create_project_private(self):
+        repository_url = "https://github.com/Tim6FTN/JSD"
+        repository = Repository.objects.create(url=repository_url, name="REPOSITORY", description="DESC",
+                                               is_public=True)
+        repository_importer = RepositoryImporter(repository_url)
+        repository_importer.check_if_repository_exists = MagicMock(return_value=True)
+        repository_importer.import_repository = MagicMock(return_value=repository)
+
         self.client.login(username="user", password="user")
-        data = {'name': 'Project1', 'repository_url': 'https://github.com/Tim6FTN/UKS',
+        data = {'name': 'Project1', 'repositoryUrl': repository_url,
                 'description': 'DESCRIPTION MARKDOWN', 'is_public': 'false'}
         response = self.client.post(url_list, data=data)
 
@@ -106,32 +130,35 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.data.get('stars'), [])
         self.assertEqual(False, response.data.get('is_public'))
 
+
     def test_update_project_empty_fields(self):
+        project = Project.objects.get(name="Project1")
         self.client.login(username="admin", password="admin")
-        response = self.client.put(url_detail(1), data={})
-        print(response.data)
+        response = self.client.put(url_detail(project.id), data={})
         self.assertEqual('This field is required.', response.data.get('name')[0])
 
     def test_update_not_owner(self):
+        project = Project.objects.get(name="Project2")
         self.client.login(username="admin", password="admin")
-        data = {'name': 'Project11', 'repository_url': 'https://github.com/Tim6FTN/UKS',
+        data = {'name': 'Project11', 'repository_url': 'https://github.com/Tim6FTN/JSD',
                 'description': 'DESCRIPTION MARKDOWN', 'is_public': 'false', 'wiki_content': 'wiki'}
-        response = self.client.put(url_detail(3), data=data)
+        response = self.client.put(url_detail(project.id), data=data)
         self.assertEqual('You do not have permission to perform this action.', str(response.data.get('detail')))
-        print(response.data)
 
     def test_update_unique_name(self):
+        project = Project.objects.get(name="Project1")
         self.client.login(username="admin", password="admin")
-        data = {'name': 'Project11', 'repository_url': 'https://github.com/Tim6FTN/UKS',
+        data = {'name': 'Project11', 'repository_url': 'https://github.com/Tim6FTN/JSD',
                 'description': 'DESCRIPTION MARKDOWN', 'is_public': 'false', 'wiki_content': 'wiki'}
-        response = self.client.put(url_detail(1), data=data)
+        response = self.client.put(url_detail(project.id), data=data)
         self.assertEqual('Project with name Project11 already exists', response.data[0])
 
     def test_update_successful(self):
+        project = Project.objects.get(name="Project1")
         self.client.login(username="admin", password="admin")
         data = {'name': 'Project123',
                 'description': 'DESCRIPTION MARKDOWN', 'is_public': 'false', 'wiki_content': 'wiki'}
-        response = self.client.put(url_detail(1), data=data)
+        response = self.client.put(url_detail(project.id), data=data)
         self.assertEqual('Project123', response.data.get('name'))
         self.assertEqual('DESCRIPTION MARKDOWN', response.data.get('description'))
         self.assertEqual(False, response.data.get('is_public'))
@@ -142,13 +169,15 @@ class ProjectTests(APITestCase):
         self.assertEqual('Authentication credentials were not provided.', response.data.get('detail'))
 
     def test_delete_not_owner(self):
+        project = Project.objects.get(name="Project2")
         self.client.login(username="admin", password="admin")
-        response = self.client.delete(url_detail(3))
+        response = self.client.delete(url_detail(project.id))
         self.assertEqual('You do not have permission to perform this action.', response.data.get('detail'))
 
     def test_delete_successful(self):
+        project = Project.objects.get(name="Project1")
         self.client.login(username="admin", password="admin")
-        response = self.client.delete(url_detail(1))
+        response = self.client.delete(url_detail(project.id))
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
 
@@ -188,25 +217,30 @@ class InviteTest(APITestCase):
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_accept_invite_successful(self):
+        invite = Invite.objects.all().first()
         self.client.login(username="user", password="user")
-        response = self.client.get(invite_url_detail(1))
-        project = Project.objects.get(pk=1)
+        response = self.client.get(invite_url_detail(invite.id))
+        project = Project.objects.get(name="Project1")
         self.assertEqual('user', project.collaborators.all()[0].username)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_decline_invite_forbidden(self):
+        invite = Invite.objects.all().first()
         self.client.login(username="admin", password="admin")
-        response = self.client.delete(invite_url_detail(1))
+        response = self.client.delete(invite_url_detail(invite.id))
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_decline_invite_successful(self):
+        invite = Invite.objects.all().first()
+        project = Project.objects.get(name="Project1")
         self.client.login(username="user", password="user")
-        response = self.client.delete(invite_url_detail(1))
-        project = Project.objects.get(pk=1)
+        response = self.client.delete(invite_url_detail(invite.id))
         self.assertEqual(0, len(project.collaborators.all()))
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_update_invite(self):
+        invite = Invite.objects.all().first()
         self.client.login(username="admin", password="admin")
-        response = self.client.put(invite_url_detail(1), data={})
+        response = self.client.put(invite_url_detail(invite.id), data={})
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
+'''

@@ -18,7 +18,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     stars = UserSerializer(many=True, read_only=True)
     collaborators = UserSerializer(many=True, read_only=True)
-    repository_url = serializers.CharField(write_only=True)
     repository = serializers.PrimaryKeyRelatedField(read_only=True)
     is_public = serializers.BooleanField(default=True)
     wiki_content = serializers.CharField(default='', allow_blank=True)
@@ -27,18 +26,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'owner', 'description', 'repository', 'repository_url', 'stars', 'collaborators',
+        fields = ['id', 'name', 'owner', 'description', 'repository', 'stars', 'collaborators',
                   'is_public', 'wiki_content', 'collaborators', 'labels', 'milestone']
 
-    def get_fields(self, *args, **kwargs):
-        fields = super(ProjectSerializer, self).get_fields()
-        method = self.context.get('method', None)
-        if method == "PUT":
-            fields['repository_url'].required = False
-        return fields
-
     def create(self, validated_data):
-        repository = Repository.objects.create(name='name123', url=validated_data.pop('repository_url'))
+        repository = self.context.get('repository', None)
         owner = self.context.get('owner', None)
         project = Project.objects.create(owner=owner, repository=repository, **validated_data)
         return project

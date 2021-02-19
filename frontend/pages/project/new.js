@@ -9,7 +9,7 @@ import ProjectService from "../../services/projectService";
 const NewRepository = () => {
   const emptyProject = {
     name: "",
-    repository_url: "",
+    repositoryUrl: "",
     description: "",
     is_public: true,
   };
@@ -52,8 +52,8 @@ const NewRepository = () => {
           <input
             type="text"
             className="form-control"
-            value={project.repository_url}
-            onChange={handleChange("repository_url")}
+            value={project.repositoryUrl}
+            onChange={handleChange("repositoryUrl")}
             required
           />
         </div>
