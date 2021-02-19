@@ -21,7 +21,6 @@ const Tasks = () => {
 
   const getTasks = async (paramProjectId) => {
     const newTasks = (await TaskService.getAll(paramProjectId)).data;
-    setProjectId(paramProjectId);
     setTasks(newTasks);
   };
 
