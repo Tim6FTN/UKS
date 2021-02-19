@@ -11,7 +11,7 @@ const NewRepository = () => {
     name: "",
     repositoryUrl: "",
     description: "",
-    isPublic: true,
+    is_public: true,
   };
 
   const router = useRouter();
@@ -71,9 +71,9 @@ const NewRepository = () => {
           <input
             className="form-check-input"
             type="checkbox"
-            checked={project.isPublic}
+            checked={project.is_public}
             onChange={(event) =>
-              setProject({ ...project, isPublic: event.target.checked })
+              setProject({ ...project, is_public: event.target.checked })
             }
           />
           <label className="form-check-label">Is public?</label>

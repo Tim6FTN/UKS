@@ -18,7 +18,6 @@ const BranchList = ({ branches, active, handleChange, handleAdd }) => {
           ))}
         </select>
       </div>
-      <BranchAdd handleAdd={handleAdd} />
     </>
   );
 };
