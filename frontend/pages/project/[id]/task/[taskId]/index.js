@@ -120,7 +120,7 @@ const Task = () => {
                       </div>
                       <div className='col-sm-4'>
                         <span className='h5 ml-3 mt-3'>Milestone:</span>
-                        <span>{task.milestoneInfo.title}</span>
+                        <span>{task.milestoneInfo?.title}</span>
                       </div>
                     </div>
                     <div className='row'>
