@@ -67,8 +67,8 @@ def handle_github_push_event(data, *args, **kwargs):
 
     for commit_data in commits_data:
         commit = handle_commit(commit_data, branch, sha_of_previous_commit, compare_url_template, handle_diff_func)
-        reference_changes = handle_task_references(commit, project, event_description, commit.author)
-        closing_changes = handle_closing_task_references(commit, project, event_description, commit.author)
+        reference_changes = handle_task_references(commit, project, commit.author, event_description)
+        closing_changes = handle_closing_task_references(commit, project, commit.author, event_description)
 
         # TODO: Logging?
 
