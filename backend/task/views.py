@@ -104,7 +104,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         milestoneId = serializer_data.get('milestone', None)
         if milestoneId is not None:
             milestone = Milestone.objects.get(id=milestoneId)
-            MilestoneChange.objects.create(
+            AssignedMilestoneChange.objects.create(
                 user = user,
                 description = '',
                 change_type = 'Update',
@@ -137,18 +137,34 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(detail=True, methods=['post'], url_path='openTask')
-    def open_task(self, *args, **kwargs):
+    def open_task(self, request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
+        user = request.user
         task.open_task()
         task.save()
+        StateChange.objects.create(
+            user = user,
+            description = '',
+            change_type = 'Update',
+            new_state = "OPEN",
+            task = task
+        )
         serializer = self.serializer_class(instance=task)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'], url_path='closeTask')
-    def close_task(self, *args, **kwargs):
+    def close_task(self,request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
+        user = request.user
         task.close_task()
         task.save()
+        StateChange.objects.create(
+            user = user,
+            description = '',
+            change_type = 'Update',
+            new_state = "CLOSE",
+            task = task
+        )
         serializer = self.serializer_class(instance=task)
         return Response(serializer.data)
 
