@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from milestone.serializer import MilestoneSerializer
 from project.serializers import ProjectSerializer, UserSerializer
 from task.relations import UserRelatedField
@@ -50,7 +50,7 @@ class TaskSerializer(serializers.ModelSerializer):
     author = self.context.get('author', None)
     project = self.context.get('project', None)
 
-    date_opened = datetime.now()
+    date_opened = datetime.now(tz=timezone.utc)
     task = Task.objects.create(
       author=author,
       project=project,
