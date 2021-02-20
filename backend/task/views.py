@@ -34,7 +34,6 @@ class TaskViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
@@ -136,7 +135,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(detail=True, methods=['post'], url_path='openTask')
+    @action(detail=True, methods=['post'], url_path='openTask', url_name='open_task')
     def open_task(self, request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         user = request.user
@@ -152,7 +151,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(instance=task)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'], url_path='closeTask')
+    @action(detail=True, methods=['post'], url_path='closeTask', url_name='close_task')
     def close_task(self,request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         user = request.user
@@ -168,7 +167,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(instance=task)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get', 'post'], url_path='comment')
+    @action(detail=True, methods=['get', 'post'], url_path='comment', url_name='comment')
     def comments(self, request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         if (request.method == "GET"):
@@ -186,7 +185,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             serializer = CommentSerializer(comment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['get'], url_path='changes')
+    @action(detail=True, methods=['get'], url_path='changes', url_name='changes')
     def get_changes(self, request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         task_changes = TaskChange.objects.filter(task_id=task.id).order_by('timestamp')
