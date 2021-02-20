@@ -131,6 +131,7 @@ class RepositoryImporter:
     async def handle_public_commit(commit_data: dict, sha_of_previous_commit: str,
                                    compare_url_template: str) -> CommitMetaData:
         diff_files = []
+        diff_data = {'stats': {'additions': 0, 'deletions': 0, 'total': 0}}
         try:
             async with httpx.AsyncClient() as client:
                 diff_response = await asyncio.gather(client.get(compare_url_template, headers=AUTH_HEADER_DICT))
