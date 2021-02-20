@@ -31,12 +31,15 @@ const Task = () => {
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'medium' }).format(date);
+    return new Intl.DateTimeFormat("en", {
+      dateStyle: "medium",
+      timeStyle: "medium",
+    }).format(date);
   };
 
   const handleTaskStateChange = async () => {
     let updatedTask;
-    if (task.state === 'Open') {
+    if (task.state === "Open") {
       updatedTask = (await TaskService.closeTask(projectId, taskId)).data;
     } else {
       updatedTask = (await TaskService.openTask(projectId, taskId)).data;
@@ -48,39 +51,39 @@ const Task = () => {
     <>
       <ProjectWrapper>
         {task && (
-          <div className='row'>
-            <div className='col-sm-9'>
-              <div className='card'>
-                <div className='card-body'>
-                  <div className='card-title'>
-                    <p className='h3'>{task.title}</p>
+          <div className="row">
+            <div className="col-sm-9">
+              <div className="card">
+                <div className="card-body">
+                  <div className="card-title">
+                    <p className="h3">{task.title}</p>
                   </div>
-                  <div className='card-text'>
+                  <div className="card-text">
                     <hr />
-                    <div className='row ml-1'>
-                      <div className='col-sm-3'>
-                        <div className='row'>
-                          <span className='h5'>Author</span>
+                    <div className="row ml-1">
+                      <div className="col-sm-3">
+                        <div className="row">
+                          <span className="h5">Author</span>
                         </div>
-                        <div className='row'>
+                        <div className="row">
                           <span>{task.author.username}</span>
                         </div>
                       </div>
-                      <div className='col-sm-4'>
-                        <div className='row'>
-                          <span className='h5'>Date opened:</span>
+                      <div className="col-sm-4">
+                        <div className="row">
+                          <span className="h5">Date opened:</span>
                         </div>
-                        <div className='row'>
+                        <div className="row">
                           <span>{formatDate(task.date_opened)}</span>
                         </div>
                       </div>
-                      <div className='col-sm-4'>
+                      <div className="col-sm-4">
                         {task.date_closed && (
                           <>
-                            <div className='row'>
-                              <span className='h5'>Date closed</span>
+                            <div className="row">
+                              <span className="h5">Date closed</span>
                             </div>
-                            <div className='row'>
+                            <div className="row">
                               <span>{formatDate(task.date_closed)}</span>
                             </div>
                           </>
@@ -88,22 +91,23 @@ const Task = () => {
                       </div>
                     </div>
                     <hr />
-                    <div className='ml-2'>{task.description}</div>
+                    <div className="ml-2">{task.description}</div>
                     {task.labelsInfo && task.labelsInfo.length > 0 && (
                       <>
                         <hr />
-                        <div className='row'>
-                          <div className='col-sm-12'>
-                            <span className='h5'>Labels</span>
+                        <div className="row">
+                          <div className="col-sm-12">
+                            <span className="h5">Labels</span>
                           </div>
-                          <div className='row'>
-                            <div className='col-sm-12'>
+                          <div className="row">
+                            <div className="col-sm-12">
                               {task.labelsInfo.map((label) => (
                                 <>
                                   <LittleLabel
                                     key={label.id}
                                     name={label.name}
-                                    color={label.color}></LittleLabel>
+                                    color={label.color}
+                                  ></LittleLabel>
                                 </>
                               ))}
                             </div>
@@ -112,13 +116,13 @@ const Task = () => {
                       </>
                     )}
                     <hr />
-                    <div className='row d-flex align-items-center'>
-                      <div className='col-sm-4 mt-1'>
-                        <span className='h5'>Status:</span>
+                    <div className="row d-flex align-items-center">
+                      <div className="col-sm-4 mt-1">
+                        <span className="h5">Status:</span>
                         <span>{task.task_status}</span>
                       </div>
-                      <div className='col-sm-4 mt-1'>
-                        <span className='h5 ml-3 mt-3'>Prioritiy:</span>
+                      <div className="col-sm-4 mt-1">
+                        <span className="h5 ml-3 mt-3">Prioritiy:</span>
                         <span>{task.priority}</span>
                       </div>
                       <div className='col-sm-4'>
@@ -148,10 +152,10 @@ const Task = () => {
                 </div>
               </div>
             </div>
-            <div className='col-sm-3'>
-              <div className='row mt-3'>
-                <div className='col-sm-12 text-center'>
-                  <h1 style={{ minHeight: '75px' }}>{task.state}</h1>
+            <div className="col-sm-3">
+              <div className="row mt-3">
+                <div className="col-sm-12 text-center">
+                  <h1 style={{ minHeight: "75px" }}>{task.state}</h1>
                 </div>
               </div>
               <div className='row'>
@@ -179,10 +183,10 @@ const Task = () => {
               </div>
               {task.assignees && task.assignees.length > 0 && (
                 <>
-                  <div className='row mt-3'>
-                    <span className='h5'>Assignees:</span>
+                  <div className="row mt-3">
+                    <span className="h5">Assignees:</span>
                   </div>
-                  <div className='row'>
+                  <div className="row">
                     <ul>
                       {task.assignees.map((user) => (
                         <li key={user}>{user}</li>
