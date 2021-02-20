@@ -168,9 +168,9 @@ const Task = () => {
                         )}
                     </div>
                     <History comments={comments} />
-                    <div className="row mt-2 pt-2 border-top border-dark">
+                    <div className="row mt-2 pt-2 mx-1 border-top border-dark">
                       <textarea
-                        className="w-100 m-4 p-2"
+                        className="w-100 mt-2 p-2"
                         rows={4}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
