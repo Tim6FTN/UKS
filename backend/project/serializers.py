@@ -1,4 +1,4 @@
-from milestone.serializer import MilestoneSerializer
+from milestone.serializer import MilestoneSerializer, TaskSerializer
 from django.contrib.auth.models import User
 from django.db.models.fields.related import RelatedField
 from rest_framework import serializers

@@ -145,7 +145,7 @@ const Task = () => {
                         <span> {task.task_status}</span>
                       </div>
                       <div className="col-sm-4 mt-1">
-                        <span className="h5 ml-3 mt-3">Prioritiy:</span>
+                        <span className="h5 ml-3 mt-3">Priority:</span>
                         <span> {task.priority}</span>
                       </div>
                       <div className="col-sm-4">
