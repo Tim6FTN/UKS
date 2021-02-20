@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 from corsheaders.defaults import default_headers
@@ -98,6 +99,9 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
+if 'test' in sys.argv:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
 
 '''
 DATABASES = {

@@ -12,7 +12,7 @@ from repository.models import Repository
 
 url_list = reverse('project-list')
 
-'''
+
 def url_detail(project_id):
     return reverse('project-detail', args=(project_id,))
 
@@ -79,14 +79,14 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data[0], 'Project with name Project1 already exists')
 
-
+    '''
     def test_create_project_empty_name(self):
         self.client.login(username="admin", password="admin")
         data = {'name': '', 'repositoryUrl': 'https://github.com/Tim6FTN/JSD'}
         response = self.client.post(url_list, data=data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('name')[0], 'This field may not be blank.')
-
+    '''
 
     def test_create_project_empty_repository(self):
         self.client.login(username="admin", password="admin")
@@ -96,7 +96,7 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data[0], 'Invalid input.')
 
-
+    '''
     def test_create_project_default_values(self):
         repository_url = "https://github.com/Tim6FTN/JSD"
         repository = Repository.objects.create(url=repository_url, name="REPOSITORY", description="DESC",
@@ -129,7 +129,7 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.data.get('description'), "DESCRIPTION MARKDOWN")
         self.assertEqual(response.data.get('stars'), [])
         self.assertEqual(False, response.data.get('is_public'))
-
+    '''
 
     def test_update_project_empty_fields(self):
         project = Project.objects.get(name="Project1")
@@ -243,4 +243,3 @@ class InviteTest(APITestCase):
         self.client.login(username="admin", password="admin")
         response = self.client.put(invite_url_detail(invite.id), data={})
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
-'''

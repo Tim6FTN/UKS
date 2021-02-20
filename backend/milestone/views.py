@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from milestone.models import Milestone
 from milestone.serializer import MilestoneSerializer
 from project.models import Project
-
+from django.db.transaction import atomic
 
 class MilestoneViewSet(viewsets.ModelViewSet):
     queryset = Milestone.objects.all()
@@ -25,7 +25,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
             "project": project
         }
 
-        serializer_data = request.data | {"project_id": project.id}
+        serializer_data = {**request.data, **{"project_id": project.id}}
         serializer = self.serializer_class(
             data=serializer_data, context=context,
         )
@@ -34,6 +34,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @atomic
     def update(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_pk'))
         milestone = Milestone.objects.select_for_update().filter(pk=kwargs.get('pk'))
