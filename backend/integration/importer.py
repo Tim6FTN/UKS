@@ -26,7 +26,7 @@ AUTH_HEADER_DICT = {'Authorization': f"token {os.getenv('GH_ACCESS_TOKEN')}"}
 class RepositoryImporter:
 
     def __init__(self, repository_url: str):
-        self.__repository_url = repository_url
+        self.__repository_url = repository_url.strip("/")
         self.__owner = str()
         self.__repository_name = str()
         self.__raw_repository_data = dict()
@@ -59,7 +59,7 @@ class RepositoryImporter:
     def __parse_repository_data(self):
         self.__repository_default_branch = self.__raw_repository_data['default_branch']
         self.__repository_name = self.__raw_repository_data['name']
-        self.__repository_description = self.__raw_repository_data['description']
+        self.__repository_description = self.__raw_repository_data['description'] if self.__raw_repository_data['description'] else 'No description provided'
         self.__is_repository_public = not self.__raw_repository_data['private']
         self.__branches_url = re.sub('{/branch}', '', self.__raw_repository_data['branches_url'])
 
@@ -99,8 +99,17 @@ class RepositoryImporter:
             commit_data['id'] = commit_data['sha']
             commit_data['message'] = commit_data['commit']['message']
             commit_data['timestamp'] = commit_data['commit']['committer']['date']
-            commit_data['author']['name'] = commit_data['author']['login']
-            commit_data['author']['email'] = "unknown"
+            if commit_data['author']:
+                commit_data['author']['name'] = commit_data['author']['login']
+                commit_data['author']['email'] = "unknown"
+            else:
+                commit_data['author'] = dict()
+                commit_data['author']['name'] = "unknown"
+                commit_data['author']['email'] = "unknown"
+
+            commit_data['url'] = re.sub('api.github', 'github', commit_data['url'])
+            commit_data['url'] = re.sub('/repos', '', commit_data['url'])
+            commit_data['url'] = re.sub('commits', 'commit', commit_data['url'])
 
             commit_full_data_url = f'{API_REPOSITORY_URL}{SLASH}{self.__owner}{SLASH}{self.__repository_name}{SLASH}commits{SLASH}{commit_data["sha"]}'
 

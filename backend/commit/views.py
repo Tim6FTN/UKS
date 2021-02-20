@@ -14,7 +14,7 @@ class CommitViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         branch_id = self.request.query_params.get("id")
-        commits = Commit.objects.filter(branch=branch_id)
+        commits = Commit.objects.filter(branch=branch_id).order_by('-timestamp')
         serializer = CommitSerializer(commits, many=True)
         return Response(serializer.data)
 
