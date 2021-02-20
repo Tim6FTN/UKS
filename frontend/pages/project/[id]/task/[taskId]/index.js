@@ -1,12 +1,22 @@
-import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
-import ProjectWrapper from '../../../../../components/project/wrapper';
-import TaskService from '../../../../../services/taskService';
-import LittleLabel from '../../../../../components/task/littleLabel';
-import Link from 'next/link';
-import { useContext } from 'react';
-import { ProjectContext } from '../../../../../contexts/projectContext';
-import { UserContext } from '../../../../../contexts/userContext';
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import ProjectWrapper from "../../../../../components/project/wrapper";
+import TaskService from "../../../../../services/taskService";
+import LittleLabel from "../../../../../components/task/littleLabel";
+import Link from "next/link";
+import { useContext } from "react";
+import { ProjectContext } from "../../../../../contexts/projectContext";
+import { UserContext } from "../../../../../contexts/userContext";
+import History from "../../../../../components/task/history";
+import ProjectService from "../../../../../services/projectService";
+
+export const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeStyle: "medium",
+  }).format(date);
+};
 
 const Task = () => {
   const [task, setTask] = useState(null);
@@ -19,6 +29,8 @@ const Task = () => {
   useEffect(() => {
     if (router.query.taskId && router.query.id) {
       getTask(router.query.id, router.query.taskId);
+      getComments(router.query.id, router.query.taskId);
+      getChanges(router.query.id, router.query.taskId);
     }
   }, [router.query.taskId]);
 
@@ -29,14 +41,6 @@ const Task = () => {
     setTaskId(paramTaskId);
   };
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat("en", {
-      dateStyle: "medium",
-      timeStyle: "medium",
-    }).format(date);
-  };
-
   const handleTaskStateChange = async () => {
     let updatedTask;
     if (task.state === "Open") {
@@ -44,9 +48,28 @@ const Task = () => {
     } else {
       updatedTask = (await TaskService.openTask(projectId, taskId)).data;
     }
+    getChanges(projectId, taskId);
     setTask(updatedTask);
   };
 
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+  const handleAddComment = async () => {
+    await ProjectService.sendComment(project.id, taskId, comment);
+    setComment("");
+    await getComments(project.id, taskId);
+  };
+
+  const getComments = async (projectId, taskId) => {
+    const response = await ProjectService.getComments(projectId, taskId);
+    setComments(response.data);
+  };
+
+  const [changes, setChanges] = useState([]);
+  const getChanges = async (projectId, taskId) => {
+    const response = await ProjectService.getChanges(projectId, taskId);
+    setChanges(response.data);
+  };
   return (
     <>
       <ProjectWrapper>
@@ -119,34 +142,53 @@ const Task = () => {
                     <div className="row d-flex align-items-center">
                       <div className="col-sm-4 mt-1">
                         <span className="h5">Status:</span>
-                        <span>{task.task_status}</span>
+                        <span> {task.task_status}</span>
                       </div>
                       <div className="col-sm-4 mt-1">
-                        <span className="h5 ml-3 mt-3">Prioritiy:</span>
-                        <span>{task.priority}</span>
+                        <span className="h5 ml-3 mt-3">Priority:</span>
+                        <span> {task.priority}</span>
                       </div>
-                      <div className='col-sm-4'>
-                        <span className='h5 ml-3 mt-3'>Milestone:</span>
-                        <span>{task.milestoneInfo?.title}</span>
+                      <div className="col-sm-4">
+                        <span className="h5 ml-3 mt-3">Milestone:</span>
+                        <span> {task.milestoneInfo?.title}</span>
                       </div>
                     </div>
-                    <div className='row'>
+                    <div className="row">
                       {user &&
                         (user?.id === project.owner.id ||
-                          project?.collaborators?.some((collab) => collab.id == user.id)) && (
-                          <div className='ml-auto mr-5 mt-3'>
+                          project?.collaborators?.some(
+                            (collab) => collab.id == user.id
+                          )) && (
+                          <div className="ml-auto mr-3 mt-3">
                             <Link
-                              className='ml-auto'
-                              href={`/project/${projectId}/task/${taskId}/edit`}>
+                              className="ml-auto"
+                              href={`/project/${projectId}/task/${taskId}/edit`}
+                            >
                               <button
-                                type='button'
-                                className='btn btn-secondary'
-                                style={{ minWidth: '80px' }}>
+                                type="button"
+                                className="btn btn-secondary"
+                                style={{ minWidth: "80px" }}
+                              >
                                 Edit
                               </button>
                             </Link>
                           </div>
                         )}
+                    </div>
+                    <History comments={comments} changes={changes}/>
+                    <div className="row mt-2 pt-2 mx-1 border-top border-dark">
+                      <textarea
+                        className="w-100 mt-2 p-2"
+                        rows={4}
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                      ></textarea>
+                      <button
+                        className="btn btn-secondary mt-2 ml-auto"
+                        onClick={handleAddComment}
+                      >
+                        Comment
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -158,23 +200,27 @@ const Task = () => {
                   <h1 style={{ minHeight: "75px" }}>{task.state}</h1>
                 </div>
               </div>
-              <div className='row'>
+              <div className="row">
                 {user &&
                   (user?.id === project.owner.id ||
-                    project?.collaborators?.some((collab) => collab.id == user.id)) && (
+                    project?.collaborators?.some(
+                      (collab) => collab.id == user.id
+                    )) && (
                     <>
-                      {task.state === 'Open' ? (
+                      {task.state === "Open" ? (
                         <button
-                          type='button'
-                          className='btn btn-danger btn-block'
-                          onClick={handleTaskStateChange}>
+                          type="button"
+                          className="btn btn-danger btn-block"
+                          onClick={handleTaskStateChange}
+                        >
                           Close
                         </button>
                       ) : (
                         <button
-                          type='button'
-                          className='btn btn-success btn-block'
-                          onClick={handleTaskStateChange}>
+                          type="button"
+                          className="btn btn-success btn-block"
+                          onClick={handleTaskStateChange}
+                        >
                           Open
                         </button>
                       )}

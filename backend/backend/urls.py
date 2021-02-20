@@ -42,6 +42,8 @@ projects_router.register(r'task', TaskViewSet)
 projects_router.register(r'milestone', MilestoneViewSet)
 
 
+tasks_router = nested_router.NestedSimpleRouter(projects_router, r'task', lookup='task')
+
 urlpatterns = [
     path('api/', include(router.urls)),
     path('api/', include(projects_router.urls), name='project'),

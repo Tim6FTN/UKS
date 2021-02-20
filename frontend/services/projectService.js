@@ -22,7 +22,7 @@ const create = (project) => {
   return axios.post(`${projectUrl}/`, project, {
     headers: { Authorization: `Token ${localStorage.getItem("token")}` },
   });
-}
+};
 
 const remove = (projectId) =>
   axios.delete(`${projectUrl}/${projectId}/`, {
@@ -50,6 +50,24 @@ const getTopFive = () => axios.get(`${projectUrl}/getTopFive/`);
 const search = (searchValue) =>
   axios.get(`${projectUrl}/search/`, { params: { value: searchValue } });
 
+const getComments = (projectId, taskId) =>
+  axios.get(`${projectUrl}/${projectId}/task/${taskId}/comment`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
+
+const getChanges = (projectId, taskId) =>
+  axios.get(`${projectUrl}/${projectId}/task/${taskId}/changes`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
+
+const sendComment = (projectId, taskId, comment) =>
+  axios.post(
+    `${projectUrl}/${projectId}/task/${taskId}/comment/`,
+    { text: comment },
+    {
+      headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+    }
+  );
 const ProjectService = {
   getAll,
   getById,
@@ -60,6 +78,9 @@ const ProjectService = {
   removeStar,
   getTopFive,
   search,
+  getComments,
+  sendComment,
+  getChanges,
 };
 
 export default ProjectService;
