@@ -1,0 +1,220 @@
+@startuml
+
+title UKS - Class Diagram
+
+        '============================================================='
+        'Core entities'
+        '============================================================='
+        together {
+            entity User {
+                + username : String
+                + password : String
+                + email : String
+            }
+        }
+
+        '============================================================='
+        'VCS entities'
+        '============================================================='
+        together {
+            entity Repository {
+                + url : String
+                + name : String
+                + description : String
+                + is_public : bool
+            }
+    
+            entity Branch {
+                + name : String
+            }
+            
+            entity Commit {
+                - creator_username : String
+                + hash_id : String
+                + message : String
+                - description : String
+                - url : String
+                + timestamp : Date
+            }
+                    
+            entity CommitMetaData {
+                - file_additions : Integer
+                - file_deletions : Integer
+                - line_additions : Integer
+                - line_deletions : Integer
+                - line_changes : Integer
+            }
+        }
+
+        '============================================================='
+        'Organizational entities'
+        '============================================================='
+        together {
+            entity Project {
+                + name : String
+                + description : String
+                + is_public : bool
+            }
+            
+            entity Wiki {
+                + content : String
+            }
+            
+            entity Milestone {
+                + title : String
+                + description : String
+                + start_date : Date
+                + due_date : Date
+            }
+            
+            entity Task {
+                + title : String
+                + description : String
+                + opened_date : Date
+                + closed_date : Date
+                + priority : Priority
+                + state : State
+                + status : TaskStatus
+                + attachment : File
+            }
+            
+            entity Label {
+                + name : String
+                + color : String
+            }
+            
+            entity Comment {
+                + text : String
+                + attachment : File
+            }
+            
+            
+            abstract Change {
+                - type : ChangeType
+                + description : String
+                + timestamp : Date
+            }
+            
+            together {
+                abstract MilestoneChange {}
+                
+                entity DescriptionChange {
+                    - new_description : String
+                    - old_description : String
+                }
+                entity StartDateChange {
+                    - new_start_date : Date
+                    - old_start_date : Date
+                }
+                entity DueDateChange {
+                    - new_due_date : Date
+                    - old_due_date : Date
+                }
+            }
+            
+            together {
+                abstract TaskChange {}
+                
+                entity AssigneeChange {
+                    - new_assignee : User
+                }
+                entity LabelChange {
+                    - label : Label
+                }
+                entity PriorityChange {
+                    - new_priority : Priority
+                    - old_priority : Priority
+                }
+                entity StatusChange {
+                    - new_status : TaskStatus
+                    - old_status : TaskStatus
+                }
+                entity StateChange {
+                    - new_state : State
+                    - old_state : State
+                }
+                entity AssignedMilestoneChange {
+                    - new_milestone : Milestone
+                }
+                entity CommentChange {
+                    - new_text : String
+                }
+                entity CommitReference {
+                    - referenced_commit : Commit
+                }
+            }
+    
+            together {
+                enum Priority { 
+                    + LOW
+                    + MEDIUM
+                    + HIGH
+                }
+                
+                enum TaskStatus {
+                    + TODO
+                    + IN_PROGRESS
+                    + TESTING
+                    + DONE
+                }
+                
+                enum State {
+                    + OPEN
+                    + CLOSED
+                }
+                
+                enum ChangeType {
+                    - UPDATE
+                    - CREATE
+                    - DELETE
+                }
+            }
+        }
+
+'============================================================='
+'RELATIONSHIPS'
+'============================================================='
+
+        Project "0..1" -right- "0..1" Repository : connected to >
+        Repository "1..1" *-down- "1..*" Branch : contains >
+        Branch "0..1" *-down- "0..*" Commit : contains >
+        Commit "0..1" -left- "0..1" CommitMetaData : contains >
+        Commit "0..*" --o "0..1" User : committed by >
+        User "0..1" o-left- "0..*" Repository : starred >
+        User "1..1" *-left- "1..*" Repository : owns >
+
+        Project "0..*" -- "1..*" User : assigned to <
+        Project "0..1" -up- "0..1" Wiki : has >
+        Project "0..1" *-down- "0..*" Milestone : part of < 
+        Project "0..1" *-left- "0..*" Task : part of <
+
+        Milestone "0..1" *-down- "0..*" Task : part of <
+        Milestone "0..*" -right- "0..*" Label : marked with >
+        Milestone "0..1" *-- "0..*" MilestoneChange : affects <
+
+    Task "0..*" --> "0..1" User : author >
+        Task "0..*" o--> "0..*" User : assignees >
+        Task "0..*" -- "0..*" Label : marked with >
+        ' === Task "0..1" *-- "0..*" Comment : contains < ==='
+        Task "0..1" *-- "0..*" TaskChange  : affects <
+
+        ' === Comment "0..*" --> "0..1" User : created by > ==='
+    Change "0..*" --> "0..1" User : made by
+        Change <|-down- MilestoneChange : extends <
+        Change <|-down- TaskChange : extends <
+
+        MilestoneChange <|-down- DescriptionChange : extends <
+        MilestoneChange <|-down- StartDateChange : extends <
+        MilestoneChange <|-down- DueDateChange : extends <
+
+        TaskChange <|-down- CommitReference : extends <
+        TaskChange <|-down- AssigneeChange : extends <
+        TaskChange <|-down- LabelChange : extends <
+        TaskChange <|-down- StateChange : extends <
+        TaskChange <|-down- StatusChange : extends <
+        TaskChange <|-down- PriorityChange : extends <
+        TaskChange <|-down- AssignedMilestoneChange : extends <
+        TaskChange <|-down- Comment : extends <
+        Comment "1..1" *-down- "0..*" CommentChange  : has >
+
+@enduml
