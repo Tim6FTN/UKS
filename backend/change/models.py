@@ -21,6 +21,7 @@ class Change(PolymorphicModel):
     change_type = models.CharField(max_length=20, choices=CHANGE_TYPES, default=UPDATE)
     description = models.TextField(default='', blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
 
     def __str__(self):
         return f'{self.timestamp} | {self.change_type} | {self.description}'

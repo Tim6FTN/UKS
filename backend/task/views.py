@@ -72,6 +72,13 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(instance=serializer_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def list(self, request, *args, **kwargs):
+        project_id = kwargs.get("project_pk")
+        tasks = Task.objects.filter(project_id=project_id)
+        print(tasks)
+        serializer = self.serializer_class(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def destroy(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
