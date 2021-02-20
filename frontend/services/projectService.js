@@ -55,6 +55,11 @@ const getComments = (projectId, taskId) =>
     headers: { Authorization: `Token ${localStorage.getItem("token")}` },
   });
 
+const getChanges = (projectId, taskId) =>
+  axios.get(`${projectUrl}/${projectId}/task/${taskId}/changes`, {
+    headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+  });
+
 const sendComment = (projectId, taskId, comment) =>
   axios.post(
     `${projectUrl}/${projectId}/task/${taskId}/comment/`,
@@ -74,7 +79,8 @@ const ProjectService = {
   getTopFive,
   search,
   getComments,
-  sendComment
+  sendComment,
+  getChanges,
 };
 
 export default ProjectService;

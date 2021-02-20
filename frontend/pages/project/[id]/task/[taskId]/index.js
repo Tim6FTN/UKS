@@ -30,6 +30,7 @@ const Task = () => {
     if (router.query.taskId && router.query.id) {
       getTask(router.query.id, router.query.taskId);
       getComments(router.query.id, router.query.taskId);
+      getChanges(router.query.id, router.query.taskId);
     }
   }, [router.query.taskId]);
 
@@ -61,6 +62,12 @@ const Task = () => {
   const getComments = async (projectId, taskId) => {
     const response = await ProjectService.getComments(projectId, taskId);
     setComments(response.data);
+  };
+
+  const [changes, setChanges] = useState([]);
+  const getChanges = async (projectId, taskId) => {
+    const response = await ProjectService.getChanges(projectId, taskId);
+    setChanges(response.data);
   };
   return (
     <>
@@ -167,7 +174,7 @@ const Task = () => {
                           </div>
                         )}
                     </div>
-                    <History comments={comments} />
+                    <History comments={comments} changes={changes}/>
                     <div className="row mt-2 pt-2 mx-1 border-top border-dark">
                       <textarea
                         className="w-100 mt-2 p-2"
