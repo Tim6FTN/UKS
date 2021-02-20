@@ -17,9 +17,32 @@ const get = async (projectId, milestoneId) =>
     },
   });
 
+const create = async (projectId, milestone) =>
+  await axios.post(`${milestoneUrl(projectId)}`, milestone, {
+    headers: {
+      Authorization: `Token ${localStorage.getItem("token")}`,
+    },
+  });
+const update = async (projectId, milestoneId, milestone) =>
+  await axios.put(`${milestoneUrl(projectId)}${milestoneId}/`, milestone, {
+    headers: {
+      Authorization: `Token ${localStorage.getItem("token")}`,
+    },
+  });
+
+const remove = async (projectId, milestoneId) =>
+  await axios.delete(`${milestoneUrl(projectId)}${milestoneId}`, {
+    headers: {
+      Authorization: `Token ${localStorage.getItem("token")}`,
+    },
+  });
+
 const MilestoneService = {
   get,
   getAll,
+  create,
+  remove,
+  update,
 };
 
 export default MilestoneService;

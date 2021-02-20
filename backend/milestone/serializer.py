@@ -24,13 +24,11 @@ class MilestoneSerializer(serializers.ModelSerializer):
     label_ids = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all(), many=True, write_only=True,
                                                    required=False)
     task_set = TaskSerializer(many=True, read_only=True)
-    task_ids = serializers.PrimaryKeyRelatedField(queryset=Task.objects.all(), many=True, write_only=True,
-                                                  read_only=False, required=False)
 
     class Meta:
         model = Milestone
-        fields = ['id', 'project', 'title', 'description', 'start_date', 'due_date', 'labels', 'label_ids', 'project_id',
-                  'task_set', 'task_ids']
+        fields = ['id', 'project', 'title', 'description', 'start_date', 'due_date', 'labels', 'label_ids',
+                  'project_id', 'task_set']
 
         validators = [
             serializers.UniqueTogetherValidator(
@@ -51,13 +49,12 @@ class MilestoneSerializer(serializers.ModelSerializer):
         start_date = datetime.now()
 
         labels = validated_data.pop('label_ids')
-        tasks = validated_data.pop('task_ids')
 
         milestone = Milestone.objects.create(project=project, start_date=start_date, **validated_data)
-        milestone.task_set.set(tasks)
         milestone.labels.set(labels)
         return milestone
 
     def update(self, instance, validated_data):
-        validated_data.pop('title')
+        labels = validated_data.pop('label_ids')
+        instance.first().labels.set(labels)
         return instance.update(**validated_data)

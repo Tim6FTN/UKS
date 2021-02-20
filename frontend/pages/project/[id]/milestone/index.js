@@ -14,7 +14,6 @@ const Milestone = () => {
 
   useEffect(() => {
     if (router.query.id) {
-      setProjectId(router.query.id);
       console.log(router.query.id);
     }
   }, []);

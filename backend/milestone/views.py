@@ -36,7 +36,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_pk'))
-
+        milestone = Milestone.objects.select_for_update().filter(pk=kwargs.get('pk'))
         if project.owner != request.user and not project.collaborators.all().filter(
                 username=request.user.username).exists():
             raise PermissionDenied()
@@ -51,7 +51,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         )
         serializer.validators = []
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.update(milestone, serializer.validated_data)
         return Response(serializer.data, status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
