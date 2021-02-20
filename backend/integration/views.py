@@ -1,5 +1,6 @@
 import asyncio
 import re
+from datetime import datetime
 
 import httpx as httpx
 from asgiref.sync import sync_to_async
@@ -7,6 +8,7 @@ from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -14,9 +16,10 @@ from branch.models import Branch
 from change.models import CloseCommitReference, CommitReference, UPDATE
 from commit.models import Commit, CommitMetaData
 from integration.constants import *
-from integration.webhook_handler import WebhookHandler
+from integration.webhook_handler import WebhookHandler, GITHUB_EVENT_DESCRIPTION
 from project.models import Project
-from task.models import Task, CLOSED, OPEN
+from repository.models import Repository
+from task.models import Task, CLOSED, OPEN, DONE
 
 webhook_handler = WebhookHandler()
 
@@ -28,9 +31,29 @@ def receive_webhook_request(request):
     return HttpResponse("", status=204)
 
 
+@webhook_handler.hook(event_type="create")
+def handle_github_branch_created_event(data, *args, **kwargs):
+    if data['ref_type'] == 'branch':
+        repository_url = data['repository']['html_url']
+        repository = Repository.objects.filter(url=repository_url).first()
+        if repository:
+            branch_name = data['ref']
+            Branch.objects.create(repository=repository, name=branch_name)
+
+
+@webhook_handler.hook(event_type="delete")
+def handle_github_branch_deleted_event(data, *args, **kwargs):
+    if data['ref_type'] == 'branch':
+        repository_url = data['repository']['html_url']
+        branch_to_delete = Branch.objects.filter(repository__url=repository_url, name=data['ref']).first()
+        if branch_to_delete:
+            branch_to_delete.delete()
+
+
 @webhook_handler.hook(event_type="push")
 def handle_github_push_event(data, *args, **kwargs):
 
+    event_description = data[GITHUB_EVENT_DESCRIPTION]
     repository_data = data[REPOSITORY]
     commits_data = data[COMMITS]
     sha_of_previous_commit = data[COMMIT_BEFORE]
@@ -44,8 +67,8 @@ def handle_github_push_event(data, *args, **kwargs):
 
     for commit_data in commits_data:
         commit = handle_commit(commit_data, branch, sha_of_previous_commit, compare_url_template, handle_diff_func)
-        reference_changes = handle_task_references(commit, project)
-        closing_changes = handle_closing_task_references(commit, project)
+        reference_changes = handle_task_references(commit, project, event_description)
+        closing_changes = handle_closing_task_references(commit, project, event_description)
 
         # TODO: Logging?
 
@@ -111,8 +134,8 @@ async def handle_public_diff(commit_data: dict, sha_of_previous_commit: str, com
     try:
         async with httpx.AsyncClient() as client:
             diff_response = await asyncio.gather(client.get(compare_url))
-            if  diff_response[0].status_code == httpx.codes.OK:
-                diff_data =  diff_response[0].json()
+            if diff_response[0].status_code == httpx.codes.OK:
+                diff_data = diff_response[0].json()
                 diff_files = diff_data[FILES]
     except httpx.RequestError as e:
         print(f'An error occurred while requesting diff on URL {e.request.url!r}.')
@@ -149,7 +172,7 @@ def extract_commit_message(commit_message):
         return tokens[0], ""
 
 
-def handle_closing_task_references(commit: Commit, project: Project):
+def handle_closing_task_references(commit: Commit, project: Project, event_description: str):
     closing_task_references = re.findall('closes #(.+?)', commit.message)
     if not closing_task_references:
         return list()
@@ -159,13 +182,13 @@ def handle_closing_task_references(commit: Commit, project: Project):
         return list()
 
     created_changes = [CloseCommitReference.objects.create(
-        change_type=UPDATE, description='TODO', task=task, referenced_commit=commit) for task in tasks_to_close]
-    tasks_to_close.update(state=CLOSED)
+        change_type=UPDATE, description=event_description, task=task, referenced_commit=commit) for task in tasks_to_close]
+    tasks_to_close.update(state=CLOSED, task_status=DONE, date_closed=datetime.now(tz=timezone.utc))
 
     return created_changes
 
 
-def handle_task_references(commit: Commit, project: Project):
+def handle_task_references(commit: Commit, project: Project, event_description: str):
     task_references = re.findall('w*(?<!closes )#(.+?)', commit.message)
     if not task_references:
         return list()
@@ -175,4 +198,4 @@ def handle_task_references(commit: Commit, project: Project):
         return list()
 
     return [CommitReference.objects.create(
-        change_type=UPDATE, description='TODO', task=task, referenced_commit=commit) for task in referenced_tasks]
+        change_type=UPDATE, description=event_description, task=task, referenced_commit=commit) for task in referenced_tasks]

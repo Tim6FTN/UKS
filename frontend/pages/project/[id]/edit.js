@@ -1,12 +1,15 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import Container from "../../../components/util/container";
-import Navbar from "../../../components/util/navbar";
+import { useContext, useEffect, useState } from "react";
 import withAuth from "../../../components/util/withAuth";
+import { ProjectContext } from "../../../contexts/projectContext";
 import ProjectService from "../../../services/projectService";
 
-const EditRepository = () => {
-  const [project, setProject] = useState({ name: "", description: "" });
+const EditProject = () => {
+  const [project, setProject] = useState({
+    name: "",
+    description: "",
+    is_public: false,
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -47,11 +50,21 @@ const EditRepository = () => {
             }
           />
         </div>
-
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            checked={project.is_public}
+            onChange={(event) =>
+              setProject({ ...project, is_public: event.target.checked })
+            }
+          />
+          <label className="form-check-label">Is public?</label>
+        </div>
         <input type="submit" className="btn btn-success" value="Submit" />
       </form>
     </div>
   );
 };
 
-export default withAuth(EditRepository);
+export default withAuth(EditProject);

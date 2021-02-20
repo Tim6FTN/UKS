@@ -85,8 +85,18 @@ const ProjectNavbar = ({
             route == "/project/[id]/tasks" ? "active" : ""
           }`}
         >
-          {" "}
-          <a style={{ textDecorationLine: "none" }}> Tasks </a>
+          <Link href={`/project/${project.id}/task`}>
+            <a style={{ textDecorationLine: "none" }}> Tasks </a>
+          </Link>
+        </div>
+        <div
+          className={`nav-item nav-link ${
+            route == "/project/[id]/milestone" ? "active" : ""
+          }`}
+        >
+          <Link href={`/project/${project.id}/milestone`}>
+            <a style={{ textDecorationLine: "none" }}> Milestones </a>
+          </Link>
         </div>
         <div
           className={`nav-item nav-link ${
@@ -94,7 +104,9 @@ const ProjectNavbar = ({
           }`}
         >
           {" "}
-          <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          <Link href={`/project/${project.id}/kanban`}>
+            <a style={{ textDecorationLine: "none" }}> Kanban </a>
+          </Link>
         </div>
         <div
           className={`nav-item nav-link ${
@@ -118,7 +130,8 @@ const ProjectNavbar = ({
             </Link>
           </div>
         )}
-        {user && (
+        {user && (user?.id === project.owner.id || 
+              project?.collaborators?.some((collab) => collab.id == user.id)) && (
           <div
             className={`nav-item nav-link ${
               route == "/project/[id]/label" ? "active" : ""
@@ -129,6 +142,18 @@ const ProjectNavbar = ({
               <a style={{ textDecorationLine: "none" }}> Labels </a>
             </Link>
           </div>
+        )}
+        {user && (
+            <div
+                className={`nav-item nav-link ${
+                    route == "/project/[id]/insights" ? "active" : ""
+                }`}
+            >
+              {" "}
+              <Link href={`/project/${project.id}/insights`}>
+                <a style={{ textDecorationLine: "none" }}> Insights </a>
+              </Link>
+            </div>
         )}
       </div>
     </>

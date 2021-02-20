@@ -29,7 +29,7 @@ const LabelRow = ({ label, tryDelete, onUpdate }) => {
   )
 }
 
-function getColor(hexcolor) {
+export function getColor(hexcolor) {
   hexcolor = hexcolor.replace("#", "");
   var r = parseInt(hexcolor.substr(0, 2), 16);
   var g = parseInt(hexcolor.substr(2, 2), 16);

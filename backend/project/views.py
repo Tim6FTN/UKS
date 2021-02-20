@@ -6,11 +6,9 @@ from rest_framework.exceptions import ValidationError, PermissionDenied, NotAuth
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.response import Response
-
-from label.serializers import LabelSerializer
+from integration.importer import RepositoryImporter
 from project.models import Project, Invite
 from project.serializers import ProjectSerializer, InviteSerializer
-from repository.models import Repository
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -27,38 +25,68 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        name = request.data['name']
+        name = request.data.get('name', '')
         if Project.objects.filter(owner=request.user, name=name).exists():
             raise ValidationError(f"Project with name {name} already exists")
-        # Webhook for repository
-        repository_url = request.data.get('repositoryUrl')
 
-        repository = Repository.objects.create(name=name, url=repository_url)
-        description = request.data['description']
-        is_public = request.data.get('isPublic')
-        project = Project.objects.create(name=name, repository=repository, description=description, is_public=is_public,
-                                         owner=request.user)
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data)
+        repository_url = request.data.get('repositoryUrl', None)
+        if repository_url is None or repository_url.isspace() or repository_url == "":
+            raise ValidationError()
+
+        repository_importer = RepositoryImporter(repository_url=repository_url)
+        repository_importer.check_if_repository_exists()
+        repository = repository_importer.import_repository()
+
+        serializer_context = {
+            "owner": request.user,
+            "repository": repository
+        }
+
+        serializer = self.serializer_class(
+            data=request.data, context=serializer_context
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, id=request.data['id'])
+        serializer_context = {
+            "owner": request.user,
+            "method": request.method
+        }
+        pk = kwargs.get('pk')
+        project = get_object_or_404(Project, id=pk)
+
         if project.owner != request.user:
             raise PermissionDenied()
-        project.name = request.data['name']
-        project.description = request.data['description']
-        project.wiki_content = request.data['wiki_content'] if not None else project.wiki_content
-        project.save()
-        serializer = ProjectSerializer(project)
+
+        name = request.data.get('name', '')
+        if project.name != name and Project.objects.filter(owner=request.user, name=name):
+            raise ValidationError(f"Project with name {name} already exists")
+
+        serializer = self.serializer_class(
+            project,
+            data=request.data,
+            context=serializer_context,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
-        # Returns project where user is owner or user is in collaborators
         if not request.user.is_authenticated:
             raise NotAuthenticated()
         projects = Project.objects.filter(Q(collaborators__id=request.user.id) | Q(owner=request.user))
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, id=kwargs.get('pk'))
+        if project.owner != request.user:
+            raise PermissionDenied()
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True)
     def star(self, request, *args, **kwargs):
@@ -92,6 +120,7 @@ class InviteViewSet(viewsets.ModelViewSet):
     queryset = Invite.objects.all()
     serializer_class = InviteSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'delete']
 
     def create(self, request, *args, **kwargs):
         user = get_object_or_404(User, username=request.data.get('username'))
@@ -110,7 +139,20 @@ class InviteViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         invite = get_object_or_404(Invite, pk=kwargs.get('pk'))
         if invite.user_id != request.user.id:
-            raise ValidationError(code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+            raise PermissionDenied()
         invite.project.collaborators.add(invite.user)
         invite.delete()
         return Response()
+
+    def list(self, request, *args, **kwargs):
+        invites = Invite.objects.filter(user=request.user)
+        serializer = InviteSerializer(invites, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        invite = get_object_or_404(Invite, pk=kwargs.get('pk'))
+        if invite.user != request.user:
+            raise PermissionDenied()
+        invite.delete()
+        return Response()
+

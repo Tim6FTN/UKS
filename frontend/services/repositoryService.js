@@ -1,33 +1,21 @@
-import axios from 'axios'
+import axios from "axios";
 
-const repositoryUrl = `${process.env.API_URL}/repository`
+const repositoryUrl = `${process.env.API_URL}/repository`;
 
 //{ headers: { "Authorization": `Token ${localStorage.getItem('token')}` } }
 
+const getAll = () => axios.get(`${repositoryUrl}/`);
 
-const getAll = () =>
-  axios.get(`${repositoryUrl}/`)
+const getById = (repositoryId) =>
+  axios.get(`${repositoryUrl}/${repositoryId}/`);
 
+const create = (repository) => axios.post(`${repositoryUrl}/`, repository);
 
-const getById = repositoryId =>
-  axios.get(`${repositoryUrl}/${repositoryId}/`)
-
-const create = repository =>
-  axios.post(`${repositoryUrl}/`, repository)
-
-const remove = id =>
-  axios.delete(`${repositoryUrl}/${id}/`)
-
-
-
-
-
+const remove = (id) => axios.delete(`${repositoryUrl}/${id}/`);
 
 const update = (id, repository) => {
-  axios.put(`${repositoryUrl}/${id}/`, repository)
-}
-
-
+  axios.put(`${repositoryUrl}/${id}/`, repository);
+};
 
 const RepositoryService = {
   getAll,
@@ -35,7 +23,6 @@ const RepositoryService = {
   create,
   remove,
   update,
-}
+};
 
-
-export default RepositoryService
+export default RepositoryService;
