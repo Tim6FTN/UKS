@@ -33,7 +33,7 @@ const Tasks = () => {
             (user?.id === project.owner.id ||
               project?.collaborators?.some((collab) => collab.id == user.id)) && (
               <Link href={`/project/${project.id}/task/new`}>
-                <a className="mx-2 font-weight-bold ml-auto my-auto">
+                <a className="mx-2 pl-4 font-weight-bold ml-auto my-auto">
                   Create task
                 </a>
               </Link>

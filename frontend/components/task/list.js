@@ -7,9 +7,9 @@ const TaskList = ({ tasks, projectId }) => {
       <ul className='list-group'>
         {tasks.map((task) => (
           <li className='list-group-item' key={task.title}>
-            <div className='row'>
+            <div className='row ml-1'>
               <Link href={`/project/${projectId}/task/${task.id}`}>
-                <a className='mt-2 font-weight-bold' style={{ textDecorationLine: 'none' }}>
+                <a className='font-weight-bold' style={{ textDecorationLine: 'none' }}>
                   {task.title}
                 </a>
               </Link>

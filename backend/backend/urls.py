@@ -25,7 +25,6 @@ from label.views import LabelViewSet
 from project.views import ProjectViewSet, InviteViewSet
 from user.views import UserViewSet
 from repository.views import RepositoryViewSet
-from change.views import CommentViewSet
 from rest_framework_nested import routers as nested_router
 
 router = routers.DefaultRouter()
@@ -35,7 +34,6 @@ router.register(r'user', UserViewSet)
 router.register(r'invite', InviteViewSet)
 router.register(r'branch', BranchViewSet)
 router.register(r'commit', CommitViewSet)
-router.register(r'comment', CommentViewSet)
 
 projects_router = nested_router.NestedSimpleRouter(router, r'project', lookup='project')
 projects_router.register(r'label', LabelViewSet)
