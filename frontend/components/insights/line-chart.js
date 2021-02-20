@@ -8,7 +8,7 @@ class LineChart extends React.Component {
 
     componentDidUpdate() {
         this.myChart.data.labels = this.props.data.map(d => d.time);
-        this.myChart.data.datasets[0].data = this.props.data.map(d => d.value);
+        this.myChart.data.datasets[0].data = this.props.data.map(d => d.value.length);
         this.myChart.update();
     }
 
@@ -22,7 +22,7 @@ class LineChart extends React.Component {
                         {
                             type: 'time',
                             time: {
-                                unit: 'week'
+                                unit: 'day'
                             }
                         }
                     ],
@@ -45,8 +45,8 @@ class LineChart extends React.Component {
             data: {
                 labels: this.props.data.map(d => d.time),
                 datasets: [{
-                    label: this.props.title,
-                    data: this.props.data.map(d => d.value),
+                    // label: this.props.title,
+                    data: this.props.data.map(d => this.props.isUser ? d.value.filter(el => el.author_username === this.props.username).length : d.value.length),
                     fill: this.props.fill,
                     backgroundColor: this.props.color,
                     pointRadius: this.props.pointRadius,

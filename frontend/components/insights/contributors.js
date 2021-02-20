@@ -1,39 +1,54 @@
 import React from 'react';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import LineChart from "./line-chart";
+import {convertUnixTimestampToDate, getDates} from "../../helpers/date.helper";
 
-const Contributors = (data) => {
-
-    const [users, setUsers] = React.useState([1, 2, 3, 4, 5]);
+const Contributors = ({commits, contributors}) => {
+    const [stats, setStats] = React.useState(null);
 
     React.useEffect(() => {
-        console.log(data);
-    }, [data])
+        const today = new Date();
+        const weekAgo = new Date(today);
+        weekAgo.setDate(weekAgo.getDate() - 7);
+
+        const lastWeekDays = getDates(weekAgo, new Date());
+        lastWeekDays.forEach(el => {
+            const convertedTime = el.time.toISOString().split('T')[0];
+            const foundCommit = commits.find(com => convertUnixTimestampToDate(com.timestamp) === convertedTime);
+            if (foundCommit) {
+                el.value.push(foundCommit);
+            }
+        });
+        setStats(lastWeekDays);
+    }, [commits])
 
     return (
         <>
-            <h6 className="text-muted">Contributions to dev, including all commits</h6>
+            <h6 className="text-muted">Contributions to main, including all commits (past 7 days)</h6>
             <div className="card border-light mb-3" style={{backgroundColor: 'whitesmoke', height: '20em'}}>
-                    <LineChart
-                        data={data.data.data}
-                        title={data.data.title}
+                {
+                    stats && <LineChart
+                        data={stats}
+                        // title={data.data.title}
                         color="#99cfa1"
                         fill='origin'
                         pointRadius={0}
                         lineTension={0.4}
+                        isUser={false}
+                        username={""}
                     />
-
+                }
             </div>
             <div className="row">
                 {
-                    users.map(() => (
-                        <div className="col-6 mb-2">
+                    contributors.map((contributor) => (
+                        <div className="col-6 mb-2" key={contributor.id}>
                             <div className="card border-info">
                                 <div className="card-header">
                                     <span>
                                         <FontAwesomeIcon icon={faUserNinja}/>
-                                        <b className="m-2">Username</b>
+                                        <b className="m-2">{contributor.username}</b>
                                     </span>
                                     <div>
                                         <span className="mr-1 small">Commits 13</span>
@@ -41,18 +56,20 @@ const Contributors = (data) => {
                                         <span className="mr-1 small" style={{color: 'red'}}>7000--</span>
                                     </div>
                                 </div>
-                                {data &&
                                 <div className="card-body" style={{height: '20em'}}>
-                                    <LineChart
-                                        data={data.data.data}
-                                        title={data.data.title}
-                                        color="#fb8533"
-                                        fill='origin'
-                                        pointRadius={0}
-                                        lineTension={0.4}
-                                    />
+                                    {
+                                        stats && <LineChart
+                                            data={stats}
+                                            // title={data.data.title}
+                                            color="#fb8533"
+                                            fill='origin'
+                                            pointRadius={0}
+                                            lineTension={0.4}
+                                            isUser={true}
+                                            username={contributor.username}
+                                        />
+                                    }
                                 </div>
-                                }
                             </div>
                         </div>
                     ))

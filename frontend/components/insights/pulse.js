@@ -1,20 +1,22 @@
-const Pulse = () => {
+const Pulse = ({activeTasks, closedTasks, mainMetaData, totalCommitsToMain}) => {
 
     return (
         <div className="card">
             <div className="card-header">Overview</div>
             <div className="card-body row">
-                <div className="col-6">Closed tasks: 12</div>
-                <div className="col-6">New tasks: 8</div>
+                <div className="col-6 align-self-center"><h5 style={{color: 'red'}}>Closed tasks: {closedTasks}</h5></div>
+                <div className="col-6"><h5 style={{color: 'green'}}>New tasks: {activeTasks}</h5></div>
             </div>
 
-            <hr/>
+            <hr className="mt-0"/>
 
             <div className="card-body">
+
                 <h5 className="font-weight-lighter">
-                    Excluding merges, <b>5</b> authors have pushed 44 commits to dev and 61
-                    commits to all branches. On dev, 147 files have changed and there have been 9,771 additions and
-                    7,957 deletions.
+                    Including all <b>{totalCommitsToMain}</b> commits to main,
+                    <b> {mainMetaData.filesAdded}</b> files have been added, <b>{mainMetaData.filesDeleted}</b> files have been deleted
+                    and there have been <b style={{color: 'green'}}>{mainMetaData.additions}</b> additions and
+                    <b style={{color: 'red'}}> {mainMetaData.deletions}</b> deletions.
                 </h5>
             </div>
         </div>

@@ -19,11 +19,19 @@ class BarChart extends React.Component {
             options: {
                 maintainAspectRatio: false,
                 scales: {
+                    xAxes: [
+                        {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
+                            }
+                        }
+                    ],
                     yAxes: [
                         {
                             ticks: {
                                 min: 0,
-                                max: 100
+                                stepSize: 1
                             }
                         }
                     ]
@@ -36,7 +44,7 @@ class BarChart extends React.Component {
                 labels: this.props.data.map(d => d.label),
                 datasets: [{
                     label: this.props.title,
-                    data: this.props.data.map(d => d.value),
+                    data: this.props.data.map(d => d.value.length),
                     backgroundColor: this.props.color
                 }]
             }
