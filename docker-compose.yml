@@ -18,10 +18,6 @@ services:
       - GH_ACCESS_TOKEN=${GH_TOKEN}
     depends_on:
       - db
-      - es
-      - kibana
-    links:
-      - redis
   db:
     restart: always
     image: postgres
@@ -44,7 +40,6 @@ services:
       - ../logs:/var/log/nginx
     depends_on:
       - web
-      - kibana
 
   nextjs:
     image: tim6uks_frontend:latest
@@ -55,79 +50,3 @@ services:
     command: ["npm", "start"]
     ports:
       - 3000:3000
-      
-  es:
-    labels:
-      com.example.service: "es"
-      com.example.description: "For searching and indexing data"
-    image: elasticsearch:5.4
-    container_name: myapp_es
-    volumes:
-      - ./esdata:/usr/share/elasticsearch/data/
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-
-  kibana:
-    labels:
-      com.example.service: "kibana"
-      com.example.description: "Data visualisation and for log aggregation"
-    image: kibana:5.4.3
-    container_name: myapp_kibana
-    ports:
-      - "5601:5601"
-    environment:
-      - ELASTICSEARCH_URL=http://es:9200
-    depends_on:
-      - es
-
-  logstash:
-    labels:
-      com.example.service: "logstash"
-      com.example.description: "For logging data"
-    image: logstash:5.4.3
-    container_name: myapp_logstash
-    volumes:
-      - ./backend/config/logstash:/logstash_dir
-    command: logstash -f /logstash_dir/logstash.conf
-    depends_on:
-      - es
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    ports:
-      - "5959:5959"
-      
-  influxdb:
-    container_name: myapp_influxdb
-    image: influxdb:1.0.2
-    ports:
-      - "8083:8083"
-      - "8086:8086"
-    volumes:
-      - ./influxdb:/var/lib/influxdb
-    restart: always
-
-  grafana:
-    container_name: myapp_grafana
-    image: grafana/grafana:4.3.2
-    ports:
-      - "3001:3000"
-    links:
-      - influxdb
-    restart: always
-
-  telegraf:
-    container_name: myapp_telegraf
-    image: telegraf:1.3.3
-    volumes:
-      - ./backend/config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: always
-    
-  redis:
-    image: redis
-    container_name: myapp_redis
-    expose:
-      - '6379'
