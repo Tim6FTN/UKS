@@ -1,4 +1,4 @@
-from change.serializers import CommentSerializer
+from change.serializers import AssignedMilestoneChangeSerializer, AssigneeChangeSerializer, CloseCommitReferenceSerializer, CommentSerializer, CommitReferenceSerializer, LabelChangeSerializer, PriorityChangeSerializer, StateChangeSerializer, StatusChangeSerializer
 from django.contrib.auth.models import User
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -9,7 +9,7 @@ from task.serializers import TaskSerializer
 
 from .models import Task
 from .models import Project
-from change.models import Comment, CREATE
+from change.models import AssignedMilestoneChange, AssigneeChange, CloseCommitReference, CommitReference, LabelChange, PriorityChange, StateChange, StatusChange, TaskChange, Comment, CREATE
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -78,7 +78,6 @@ class TaskViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         project_id = kwargs.get("project_pk")
         tasks = Task.objects.filter(project_id=project_id)
-        print(tasks)
         serializer = self.serializer_class(tasks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -102,7 +101,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=['get', 'post'], url_path='comment')
-    def get_comments(self, request, *args, **kwargs):
+    def comments(self, request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         if (request.method == "GET"):
             comments = Comment.objects.filter(task_id=task.id)
@@ -118,4 +117,43 @@ class TaskViewSet(viewsets.ModelViewSet):
             )
             serializer = CommentSerializer(comment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], url_path='changes')
+    def get_changes(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, id=kwargs.get("pk"))
+        task_changes = TaskChange.objects.filter(task_id=task.id)
+        response_data = []
+        for change in task_changes:
+            serialized_data = self.serialize_change(change)
+            if serialized_data is None:
+                continue
+            response_data.append(serialized_data)
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    def serialize_change(self, change):
+        if isinstance(change, CloseCommitReference):
+            serializer = CloseCommitReferenceSerializer(change)
+            return serializer.data
+        elif isinstance(change, CommitReference):
+            serializer = CommitReferenceSerializer(change)
+            return serializer.data
+        elif isinstance(change, AssigneeChange):
+            serializer = AssigneeChangeSerializer(change)
+            return serializer.data
+        elif isinstance(change, LabelChange):
+            serializer = LabelChangeSerializer(change)
+            return serializer.data
+        elif isinstance(change, PriorityChange):
+            serializer = PriorityChangeSerializer(change)
+            return serializer.data
+        elif isinstance(change, StatusChange):
+            serializer = StatusChangeSerializer(change)
+            return serializer.data
+        elif isinstance(change, StateChange):
+            serializer = StateChangeSerializer(change)
+            return serializer.data
+        elif isinstance(change, AssignedMilestoneChange):
+            serializer = AssignedMilestoneChangeSerializer(change)
+            return serializer.data
+        return None
 
