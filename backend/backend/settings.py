@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 from corsheaders.defaults import default_headers
@@ -99,6 +100,9 @@ DATABASES = {
     }
 }
 
+if 'test' in sys.argv:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+
 '''
 DATABASES = {
     'default': {
@@ -176,3 +180,55 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+  'handlers': {
+      'logstash': {
+          'level': 'DEBUG',
+          'class': 'logstash.TCPLogstashHandler',
+          'host': 'logstash',
+          'port': 5959, # Default port of logstash
+          'version': 1, # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
+          'message_type': 'django',  # 'type' field in logstash message. Default value: 'logstash'.
+          'fqdn': False, # Fully qualified domain name. Default value: false.
+          'tags': ['django.request'], # list of tags. Default: None.
+      },
+  },
+  'loggers': {
+      'django': {
+          'handlers': ['logstash'],
+          'level': 'DEBUG',
+      },
+      'django.request': {
+          'handlers': ['logstash'],
+          'level': 'DEBUG',
+      },
+  },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        }
+    }
+}
+
+# Cache time to live is 15 minutes.
+CACHE_TTL = 60 * 15
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"

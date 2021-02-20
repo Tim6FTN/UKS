@@ -65,11 +65,11 @@ class CommitReference(TaskChange):
 
 
 class AssigneeChange(TaskChange):
-    assignee = models.ForeignKey(to=User, on_delete=models.CASCADE, null=True)
+    assignees = models.ManyToManyField(to=User)
 
 
 class LabelChange(TaskChange):
-    label = models.ForeignKey(to=Label, on_delete=models.CASCADE)
+    labels = models.ManyToManyField(to=Label)
 
 
 class PriorityChange(TaskChange):

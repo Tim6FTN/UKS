@@ -12,7 +12,7 @@ from integration.webhook_handler import WebhookHandler, _format_event
 from project.models import Project
 from repository.models import Repository
 
-'''
+
 class TestWebhookHandler(SimpleTestCase):
 
     def test_if_secret_not_initialized(self):
@@ -400,4 +400,3 @@ INTEGRATION_TEST_REQUEST_BODY = {
         "modified": []
     }
 }
-'''

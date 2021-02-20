@@ -8,7 +8,7 @@ from project.models import Project
 from label.models import Label
 from repository.models import Repository
 
-'''
+
 class LabelTests(APITestCase):
 
     empty_project_pk = None
@@ -86,4 +86,4 @@ class LabelTests(APITestCase):
         color = '#123456'
         response = self.client.post(url, data= {'name': name, 'color': color})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-'''
+

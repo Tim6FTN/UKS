@@ -21,7 +21,11 @@ const Tasks = () => {
 
   const getTasks = async (paramProjectId) => {
     const newTasks = (await TaskService.getAll(paramProjectId)).data;
-    setTasks(newTasks);
+    setTasks(newTasks.sort(sortFunction));
+  };
+
+  const sortFunction = (a, b) => {
+    return a.state > b.state ? -1 : 1;
   };
 
   return (
@@ -33,7 +37,7 @@ const Tasks = () => {
             (user?.id === project.owner.id ||
               project?.collaborators?.some((collab) => collab.id == user.id)) && (
               <Link href={`/project/${project.id}/task/new`}>
-                <a className="mx-2 font-weight-bold ml-auto my-auto">
+                <a className="mx-2 pl-4 font-weight-bold ml-auto my-auto">
                   Create task
                 </a>
               </Link>

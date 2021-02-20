@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import ProjectWrapper from '../../../../components/project/wrapper';
 import withAuth from '../../../../components/util/withAuth';
 import TaskService from '../../../../services/taskService';
 import ProjectService from '../../../../services/projectService';
 import { useRouter } from 'next/router';
+import { ProjectContext } from '../../../../contexts/projectContext';
 
 const TaskForm = () => {
   const [newTask, setNewTask] = useState({});
   const [projectId, setProjectId] = useState(null);
-  const [project, setProject] = useState(null);
+  const {project} = useContext(ProjectContext);
   const priorities = ['Low', 'Medium', 'High'];
   const router = useRouter();
 
@@ -19,8 +20,6 @@ const TaskForm = () => {
   }, [router.query.id]);
 
   const getInitialData = async (projectParamId) => {
-    const projectRes = (await ProjectService.getById(projectParamId)).data;
-    setProject(projectRes);
     setProjectId(projectParamId);
   }
 
@@ -119,7 +118,7 @@ const TaskForm = () => {
             <div className='row'>
               <select className='custom-select' onChange={handleMultiSelect('assignees')} multiple>
                 {project?.collaborators &&
-                  project.collaborators.map((user) => (
+                  [project.owner, ...project.collaborators].map((user) => (
                     <option key={user.id} value={user.username}>
                       {user.username}
                     </option>

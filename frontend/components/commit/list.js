@@ -1,5 +1,6 @@
 import { faFolderMinus, faFolderPlus, faMinusSquare, faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { formatDate } from "../../pages/project/[id]/task/[taskId]";
 
 const CommitList = ({ commits, handleAdd }) => {
   return (
@@ -11,7 +12,7 @@ const CommitList = ({ commits, handleAdd }) => {
             <a href={commit.url}>{commit.hash_id}</a>
             <div>
               <b>{commit.author_username}</b>{" "}
-              {new Date(commit.timestamp).toString().split(" (")[0]}
+              {formatDate(commit.timestamp)}
             </div>
             <div className="mt-2">{commit.message}</div>
             <div className="mt-2 pt-2 border-top border-dark row">
