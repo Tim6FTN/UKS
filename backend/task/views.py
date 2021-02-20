@@ -9,7 +9,9 @@ from task.serializers import TaskSerializer
 
 from .models import Task
 from .models import Project
-from change.models import AssignedMilestoneChange, AssigneeChange, CloseCommitReference, CommitReference, LabelChange, PriorityChange, StateChange, StatusChange, TaskChange, Comment, CREATE
+from label.models import Label
+from milestone.models import Milestone
+from change.models import AssignedMilestoneChange, AssigneeChange, CloseCommitReference, CommitReference, LabelChange, MilestoneChange, PriorityChange, StateChange, StatusChange, TaskChange, Comment, CREATE
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -39,26 +41,76 @@ class TaskViewSet(viewsets.ModelViewSet):
         pk=kwargs.get('pk')
         serializer_data = request.data
         serializer_instance = self.queryset.get(id=pk)
+        user = request.user
 
         assignees = serializer_data.get('assignees', None)
         if assignees is not None:
-            print('AssigneeChange create')
-            pass
+            change = AssigneeChange.objects.create(
+                user = user, 
+                description = '',
+                change_type = 'Create',
+                task = serializer_instance
+            )
+            for assignee in assignees:
+                assigneeDb = User.objects.get(username=assignee)
+                change.assignees.add(assigneeDb)
+            change.save()
+
+        labels = serializer_data.get('labels', None)
+        if labels is not None:
+            change = LabelChange.objects.create(
+                user = user,
+                description = '',
+                change_type = 'Create',
+                task = serializer_instance
+                )
+            for label in labels:
+                labelDb = Label.objects.get(id=label)
+                change.labels.add(labelDb)
+            change.save()
 
         priority = serializer_data.get('priority', None)
         if priority is not None:
-            print('PriorityChange create')
-            pass
+            PriorityChange.objects.create(
+                user = user,
+                description = '',
+                change_type = 'Update',
+                old_priority = serializer_instance.priority,
+                new_priority = priority,
+                task = serializer_instance
+            )
 
         taskStatus = serializer_data.get('status', None)
         if taskStatus is not None:
-            print('StatusChange create')
-            pass
+            StatusChange.objects.create(
+                user = user,
+                description = '',
+                change_type = 'Update',
+                old_status = serializer_instance.status,
+                new_status = taskStatus,
+                task = serializer_instance
+            )
         
         state = serializer_data.get('state', None)
         if state is not None:
-            print('State create')
-            pass
+            StateChange.objects.create(
+                user = user,
+                description = '',
+                change_type = 'Update',
+                new_state = state,
+                task = serializer_instance
+            )
+
+        milestoneId = serializer_data.get('milestone', None)
+        if milestoneId is not None:
+            milestone = Milestone.objects.get(id=milestoneId)
+            MilestoneChange.objects.create(
+                user = user,
+                description = '',
+                change_type = 'Update',
+                milestone = milestone,
+                task = serializer_instance
+            )
         
         serializer = self.serializer_class(
             serializer_instance,
@@ -104,7 +156,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     def comments(self, request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
         if (request.method == "GET"):
-            comments = Comment.objects.filter(task_id=task.id)
+            comments = Comment.objects.filter(task_id=task.id).order_by('timestamp')
             serializer = CommentSerializer(comments, many=True)
             return Response(serializer.data)
         else:
@@ -121,7 +173,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='changes')
     def get_changes(self, request, *args, **kwargs):
         task = get_object_or_404(Task, id=kwargs.get("pk"))
-        task_changes = TaskChange.objects.filter(task_id=task.id)
+        task_changes = TaskChange.objects.filter(task_id=task.id).order_by('timestamp')
         response_data = []
         for change in task_changes:
             serialized_data = self.serialize_change(change)

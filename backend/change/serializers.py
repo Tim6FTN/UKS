@@ -2,7 +2,7 @@ from commit.serializers import CommitSerializer
 from project.serializers import UserSerializer
 from rest_framework import serializers
 
-from change.models import AssignedMilestoneChange, AssigneeChange, CloseCommitReference, Comment, CommentEdit, CommitReference, LabelChange, PriorityChange, TaskChange
+from change.models import AssignedMilestoneChange, AssigneeChange, CloseCommitReference, Comment, CommentEdit, CommitReference, LabelChange, PriorityChange, StateChange, StatusChange, TaskChange
 from milestone.serializer import MilestoneSerializer
 from label.serializers import LabelSerializer
 
@@ -32,19 +32,19 @@ class CommitReferenceSerializer(serializers.ModelSerializer):
 
 class AssigneeChangeSerializer(serializers.ModelSerializer):
   user = UserSerializer()
-  assignee = UserSerializer()
+  assignees = UserSerializer(many=True)
 
   class Meta:
     model = AssigneeChange
-    fields = ('timestamp', 'change_type', 'description', 'user', 'assignee')
+    fields = ('timestamp', 'change_type', 'description', 'user', 'assignees')
 
 class LabelChangeSerializer(serializers.ModelSerializer):
   user = UserSerializer()
-  label = LabelSerializer()
+  labels = LabelSerializer(many=True)
 
   class Meta:
     model = LabelChange
-    fields = ('timestamp', 'change_type', 'description', 'user', 'label')
+    fields = ('timestamp', 'change_type', 'description', 'user', 'labels')
 
 
 class PriorityChangeSerializer(serializers.ModelSerializer):
@@ -59,7 +59,7 @@ class StatusChangeSerializer(serializers.ModelSerializer):
   user = UserSerializer()
 
   class Meta:
-    model = TaskChange
+    model = StatusChange
     fields = ('timestamp', 'change_type', 'description', 'user', 'old_status', 'new_status')
 
 
@@ -67,7 +67,7 @@ class StateChangeSerializer(serializers.ModelSerializer):
   user = UserSerializer()
 
   class Meta:
-    model = TaskChange
+    model = StateChange 
     fields = ('timestamp', 'change_type', 'description', 'user', 'new_state')
 
 class AssignedMilestoneChangeSerializer(serializers.ModelSerializer):
