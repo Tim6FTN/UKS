@@ -48,6 +48,7 @@ const Task = () => {
     } else {
       updatedTask = (await TaskService.openTask(projectId, taskId)).data;
     }
+    getChanges(projectId, taskId);
     setTask(updatedTask);
   };
 
@@ -158,7 +159,7 @@ const Task = () => {
                           project?.collaborators?.some(
                             (collab) => collab.id == user.id
                           )) && (
-                          <div className="ml-auto mr-2 mt-3">
+                          <div className="ml-auto mr-3 mt-3">
                             <Link
                               className="ml-auto"
                               href={`/project/${projectId}/task/${taskId}/edit`}
@@ -183,7 +184,7 @@ const Task = () => {
                         onChange={(e) => setComment(e.target.value)}
                       ></textarea>
                       <button
-                        className="btn btn-secondary mr-2 mt-2 ml-auto"
+                        className="btn btn-secondary mt-2 ml-auto"
                         onClick={handleAddComment}
                       >
                         Comment

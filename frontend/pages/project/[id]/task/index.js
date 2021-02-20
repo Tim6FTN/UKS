@@ -21,7 +21,11 @@ const Tasks = () => {
 
   const getTasks = async (paramProjectId) => {
     const newTasks = (await TaskService.getAll(paramProjectId)).data;
-    setTasks(newTasks);
+    setTasks(newTasks.sort(sortFunction));
+  };
+
+  const sortFunction = (a, b) => {
+    return a.state > b.state ? -1 : 1;
   };
 
   return (

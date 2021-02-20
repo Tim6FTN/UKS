@@ -172,7 +172,7 @@ const EditTask = () => {
                 </div>
                 <div className="row">
                   <select
-                    defaultValue={task.milestone}
+                    defaultValue={task.milestoneInfo?.id}
                     className="custom-select"
                     onChange={handleSelect("milestone")}
                   >

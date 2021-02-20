@@ -80,13 +80,13 @@ class TaskViewSet(viewsets.ModelViewSet):
                 task = serializer_instance
             )
 
-        taskStatus = serializer_data.get('status', None)
+        taskStatus = serializer_data.get('task_status', None)
         if taskStatus is not None:
             StatusChange.objects.create(
                 user = user,
                 description = '',
                 change_type = 'Update',
-                old_status = serializer_instance.status,
+                old_status = serializer_instance.task_status,
                 new_status = taskStatus,
                 task = serializer_instance
             )
