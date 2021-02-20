@@ -33,7 +33,6 @@ branches:
     only:
     - dev
     - main
-    - devops/monitoring
  
 deploy:
     provider: elasticbeanstalk
@@ -45,5 +44,4 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
     on:
-        all_branches: true
-        condition: $TRAVIS_BRANCH =~ ^(dev|devops/monitoring)$
+        branch: main

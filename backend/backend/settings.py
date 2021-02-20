@@ -181,7 +181,7 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-'''
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -232,4 +232,3 @@ CACHE_TTL = 60 * 15
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-'''
